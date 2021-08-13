@@ -1,0 +1,10 @@
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\Bitacoras.dll.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\Bitacoras.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\Bitacoras.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\amqmdnet.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\ConexionBDSQL.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\bin\Release\ConexionBDSQL.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.pdb

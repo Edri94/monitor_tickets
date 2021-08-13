@@ -1,10 +1,12 @@
-﻿using System;
+﻿using IBM.WMQ;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 
 namespace Bitacoras
 {
@@ -51,10 +53,10 @@ namespace Bitacoras
         MqSeries mqSeries;
         public Bitacora()
         {
-            mqSeries = new MqSeries();
+            //mqSeries = new MqSeries();
         }
 
-        public void ProcesarBitacora(string strParametros)
+        public void ProcesarBitacora(string ruta, string strParametros)
         {
             string[] parametros;
             string ls_MsgVal = "";
@@ -83,22 +85,22 @@ namespace Bitacoras
 
                 ConfiguraHeader_IH_ME();
 
-                if (ValidaInfoMQ(ls_MsgVal))
+                if (!ValidaInfoMQ(ls_MsgVal))
                 {
-                    mqSeries.Escribe("Se presentó un error en la función ValidaInfoMQ invocada desde el MAIN: " + ls_MsgVal + ". Función SQL: " + strFuncionSQL);
+                    Escribe("Se presentó un error en la función ValidaInfoMQ invocada desde el MAIN: " + ls_MsgVal + ". Función SQL: " + strFuncionSQL);
                     return;
                 }
 
                 ProcesoBDtoMQQUEUE();
 
-                mqSeries.Escribe("Termina proceso bitácoras. Función SQL: " + strFuncionSQL);
+                Escribe("Termina proceso bitácoras. Función SQL: " + strFuncionSQL);
 
 
             }
             catch (Exception Err)
             {
-                mqSeries.MQDesconectar(mqSeries.queueManager, mqSeries.queue);
-                mqSeries.Escribe("Termina el acceso a la aplicación Bitácoras porque se presentó un error en la función MAIN. Función SQL: " + strFuncionSQL + ". Error. " + Err.Data + "-" + Err.Message);
+                //mqSeries.MQDesconectar(mqSeries.queueManager, mqSeries.queue);
+                Escribe("Termina el acceso a la aplicación Bitácoras porque se presentó un error en la función MAIN. Función SQL: " + strFuncionSQL + ". Error. " + Err.Data + "-" + Err.Message);
             }
         }
 
@@ -185,19 +187,21 @@ namespace Bitacoras
             string sFechaEnvio;
             string sEnvioConse;
             string sMensajeEnvio = "";
+          
 
             try
             {
-                mqSeries.Escribe("");
-                mqSeries.Escribe("Inicia envío de mensajes a Host: " + gsAccesoActual + " Función SQL: " + strFuncionSQL);
+                mqSeries = new MqSeries();
+                Escribe("");
+                Escribe("Inicia envío de mensajes a Host: " + gsAccesoActual + " Función SQL: " + strFuncionSQL);
 
-                if (mqSeries.MQConectar("", "") == "")
+                if (mqSeries.MQConectar(Gs_MQManager, mqSeries.queueManager) == "")
                 {
                     mqSeries.blnConectado = true;
                 }
                 else
                 {
-                    mqSeries.Escribe("Fallo conexión MQ-Manager " + Gs_MQManager + ": " + mqSeries.queueManager.ReasonCode + " - " + mqSeries.queueManager.ReasonName);
+                    Escribe("Fallo conexión MQ-Manager " + Gs_MQManager + ": " + mqSeries.queueManager.ReasonCode + " - " + mqSeries.queueManager.ReasonName);
                 }
 
                 sFechaEnvio = Left(DateTime.Now.ToString("yyyymmddhhnnss") + Space(26), 26);
@@ -210,7 +214,7 @@ namespace Bitacoras
                     Ls_MensajeMQ = ASTA_ENTRADA(Ls_MsgColector);
                     if (Ls_MensajeMQ != "")
                     {
-                        mqSeries.Escribe("Mensaje Enviado: " + Ls_MensajeMQ);
+                        Escribe("Mensaje Enviado: " + Ls_MensajeMQ);
 
                         if (mqSeries.MQEnviarMsg(mqSeries.queueManager, Gs_MQQueueEscritura, mqSeries.queue, mqSeries.queueMessage, Ls_MensajeMQ, strReplyToMQ))
                         {
@@ -224,27 +228,27 @@ namespace Bitacoras
                         }
                         else
                         {
-                            mqSeries.Escribe("Se ha presentado un error al escribir la solicitud en la MQ QUEUE:");
+                            Escribe("Se ha presentado un error al escribir la solicitud en la MQ QUEUE:");
                         }
                     }
                     else
                     {
-                        mqSeries.Escribe("Se ha presentado un error durante el armado del formato PS9 funcion ASTA_ENTRADA.Colector: " + Ls_MsgColector);
+                        Escribe("Se ha presentado un error durante el armado del formato PS9 funcion ASTA_ENTRADA.Colector: " + Ls_MsgColector);
                     }
                 }
                 else
                 {
-                    mqSeries.Escribe("Se ha presentado un error al armar el Layout TKT14. No existe longitud en el Colector");
+                    Escribe("Se ha presentado un error al armar el Layout TKT14. No existe longitud en el Colector");
                 }
 
                 mqSeries.MQDesconectar(mqSeries.queueManager, mqSeries.queue);
 
-                mqSeries.Escribe("Envio de solicitures TKT -> Host Terminado");
-                mqSeries.Escribe("Solicitudes enviadas a MQ: " + sMensajeEnvio);
+                Escribe("Envio de solicitures TKT -> Host Terminado");
+                Escribe("Solicitudes enviadas a MQ: " + sMensajeEnvio);
             }
             catch (Exception ex)
             {
-                mqSeries.Escribe("Se presentó un error durante la ejecución de la función ProcesoBDtoMQQUEUE");
+                Escribe("Se presentó un error durante la ejecución de la función ProcesoBDtoMQQUEUE : " + ex.Message);
             }
 
         }
@@ -264,7 +268,7 @@ namespace Bitacoras
 
                 if (ls_TempColectorMsg.Length > Int32.Parse(strColectorMaxLeng))
                 {
-                    mqSeries.Escribe("La longitud del colector supera el maximo permitido");
+                    Escribe("La longitud del colector supera el maximo permitido");
                     //GoTo ErrorASTA
                 }
 
@@ -276,7 +280,7 @@ namespace Bitacoras
 
                 if (ls_BloqueME.Length > Int32.Parse(strMsgMaxLeng))
                 {
-                    mqSeries.Escribe("La longitud del Bloque ME supera el maximo permitido");
+                    Escribe("La longitud del Bloque ME supera el maximo permitido");
                     //GoTo ErrorASTA
                 }
 
@@ -312,7 +316,7 @@ namespace Bitacoras
 
                 if (ln_longCOLECTOR > Int32.Parse(strPS9MaxLeng.Trim()))
                 {
-                    mqSeries.Escribe("La longitud del Layout PS9 supera el maximo permitido");
+                    Escribe("La longitud del Layout PS9 supera el maximo permitido");
                     //GoTo ErrorASTA
                 }
 
@@ -344,9 +348,9 @@ namespace Bitacoras
         /// <param name="section">Seccion donde buscara</param>
         /// <param name="value">Valor que buscas</param>
         /// <returns></returns>
-        private string getValueAppConfig(string section, string value)
+        private string getValueAppConfig(string section, string key)
         {
-            return ConfigurationManager.AppSettings[$"{section}.{value}"]; ;
+            return ConfigurationManager.AppSettings[$"{section}.{key}"]; ;
         }
 
         /// <summary>
@@ -406,6 +410,29 @@ namespace Bitacoras
             config.AppSettings.Settings[$"{section}.{key}"].Value = value;
 
             config.Save();
+        }
+
+        /// <summary>
+        /// escribe en el log
+        /// </summary>
+        /// <param name="vData"></param>
+        public void Escribe(string vData)
+        {
+            //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
+            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //string docPath = @"C:\tmp\log\";
+            string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+
+            if (true)
+            {
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "log.txt"),append:true))
+                {
+                    vData = "[" + DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss") + "]  Error: " + vData ;
+                    Console.WriteLine(vData);
+                    outputFile.WriteLine(vData);
+                }
+
+            }
         }
     }
 }

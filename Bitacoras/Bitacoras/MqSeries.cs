@@ -59,10 +59,10 @@ namespace Bitacoras
 
         //// Declaraciones de los objetos para MQSeries
         //// Referencia: IBM MQSeries Automation Classes for ActiveX
-        //public mqSession mqSession = new mqSession();           // Objeto Session para conexión con el servidor MQSeries
+        ////public mqSession mqSession = new mqSession();           // Objeto Session para conexión con el servidor MQSeries
         //public MQQueueManager mqManager = new MQQueueManager();      // -Objeto QueueManager para accesar al maestro de colas
-        //public MQQueue mqsEscribir = new MQQueue();             // -Objeto Queue para escribir
-        //public MQQueue mqsLectura = new MQQueue();             // -Objeto Queue para lectura
+        //public MQQueue mqsEscribir;             // -Objeto Queue para escribir
+        //public MQQueue mqsLectura;             // -Objeto Queue para lectura
         //public MQMessage mqsMsgEscribir = new MQMessage();           // -Objeto Message para escribir
         //public MQMessage mqsMsglectura = new MQMessage();           // -Objeto Message para lectura
 
@@ -77,32 +77,26 @@ namespace Bitacoras
 
         private string QueueManagerName;
 
-        public MqSeries()
+     
+        public string MQConectar(string strQueueManagerName, MQQueueManager queueManager)
         {
-           
-        }
-        public string MQConectar(string strQueueManagerName, string strChannelInfo)
-        {
-            //cInterfaz escribeLog = new cInterfaz();
-
-            QueueManagerName = strQueueManagerName;
-            string strReturn = "";
-
+            string strReturn;
+  
             try
             {
-                queueManager = new MQQueueManager(QueueManagerName);
-
-                strReturn = "Connected Successfully";
+                queueManager = new MQQueueManager(strQueueManagerName);
+                //Set objMQManager = objMQConexion.AccessQueueManager(strMQManager)
+                strReturn = "Connected Successfully : " + queueManager.Name;
+                
+                Escribe(strReturn);
             }
             catch (MQException exp)
             {
 
                 //string strError = getMQRCText(exp.Reason);
-                //escribeLog.EscribeLogs("Conecta MQ ExcepcionMQ Error trying to create Queue" +
-                //            "Manager Object. Error: " + exp.Message +
-                //            ", Details: " + strError, "C:\\Users\\stktswif\\Desktop\\VB6-Portable\\", "", 3, "jj", 1);
-                ////          ", Details: " + strError, "D:\\", "", 3, "jj", 1);
+                Escribe("Conecta MQ ExcepcionMQ Error trying to create Queue" + "Manager Object. Error Message: " + exp.Message + ", Reason: " + exp.Reason + ", ReasonCode: " + exp.ReasonCode);
                 strReturn = "Exception: " + exp.Message;
+                //Escribe("");
             }
 
             return strReturn;
@@ -171,16 +165,22 @@ namespace Bitacoras
         {
             try
             {
+
+                //MQParaLectura = objMQManager.AccessQueue(strMQCola, (int)lngOpciones);
                 ////' Se accesa la cola ya sea para leer o escribir
                 //Set objMQCola = objMQManager.AccessQueue(strMQCola, lngOpciones, mqManager.Name, "AMQ.*")
                 //MQAbrirCola = True
                 return true;
             }
+            catch (MQException exp)
+            {
+                    return false;
+            }
             catch (Exception ex)
             {
                 return false;
-                throw;
             }
+           
         }
 
         public bool MQCerrarCola(MQQueue objMCola)
@@ -205,15 +205,23 @@ namespace Bitacoras
             }
         }
 
+
+        /// <summary>
+        /// escribe en el log
+        /// </summary>
+        /// <param name="vData"></param>
         public void Escribe(string vData)
         {
             //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
-            string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //string docPath = @"C:\tmp\log\";
+            string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
 
-            if (Mb_GrabaLog)
+            if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "")))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "log.txt"), append: true))
                 {
+                    vData = "[" + DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss") + "]  Error: " + vData;
                     Console.WriteLine(vData);
                     outputFile.WriteLine(vData);
                 }

@@ -13,9 +13,17 @@ namespace Probando_Bitacora
         static void Main(string[] args)
         {
             Bitacora bitacora = new Bitacora();
-
-
-            bitacora.ProcesarBitacora("");
+            try
+            { 
+                bitacora.ProcesarBitacora("D:\\TEMPORAL\\", "QMDCEDTK - QRT.CEDTK.ENVIO.MQD8 - 1 - INLOGTDD");
+                Console.ReadKey();
+            }
+            catch (Exception ex)
+            {
+                bitacora.Escribe("ERROR Message: " + ex.Message + " Errror Data: " + ex.Data);
+                Console.WriteLine(ex.Message);
+            }
+          
 
 
         }
