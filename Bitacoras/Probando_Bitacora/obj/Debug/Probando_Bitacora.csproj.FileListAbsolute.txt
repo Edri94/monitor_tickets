@@ -1,0 +1,12 @@
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Probando_Bitacora.exe.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Probando_Bitacora.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Probando_Bitacora.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\obj\Debug\Probando_Bitacora.csproj.AssemblyReference.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\obj\Debug\Probando_Bitacora.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\obj\Debug\Probando_Bitacora.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\obj\Debug\Probando_Bitacora.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Bitacoras.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Bitacoras.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\Bitacoras.dll.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\obj\Debug\Probando_Bitacora.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Probando_Bitacora\bin\Debug\amqmdnet.dll

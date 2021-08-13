@@ -1,0 +1,2 @@
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.AssemblyReference.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.CoreCompileInputs.cache
