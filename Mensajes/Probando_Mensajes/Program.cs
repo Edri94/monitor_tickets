@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mensajes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,8 @@ namespace Probando_Mensajes
     {
         static void Main(string[] args)
         {
+            Mensaje mensaje = new Mensaje();
+            mensaje.ProcesarMensajes("D:\\TEMPORAL\\", "QMDCEDTK-QRT.CEDTK.ENVIO.MQD8-1-INAUTPU");
         }
     }
 }

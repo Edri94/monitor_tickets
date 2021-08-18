@@ -69,7 +69,7 @@ namespace Bitacoras
 
                 lsCommandLine = strParametros.Trim();
 
-                if (lsCommandLine.Equals("") != false)
+                if (lsCommandLine.Equals("") == false)
                 {
                     parametros = lsCommandLine.Split('-');
 
@@ -87,20 +87,20 @@ namespace Bitacoras
 
                 if (!ValidaInfoMQ(ls_MsgVal))
                 {
-                    Escribe("Se presentó un error en la función ValidaInfoMQ invocada desde el MAIN: " + ls_MsgVal + ". Función SQL: " + strFuncionSQL);
+                    Escribe("Se presentó un error en la función ValidaInfoMQ invocada desde el MAIN: " + ls_MsgVal + ". Función SQL: " + strFuncionSQL, "Mensaje");
                     return;
                 }
 
                 ProcesoBDtoMQQUEUE();
 
-                Escribe("Termina proceso bitácoras. Función SQL: " + strFuncionSQL);
+                Escribe("Termina proceso bitácoras. Función SQL: " + strFuncionSQL, "Mensaje");
 
 
             }
             catch (Exception Err)
             {
                 //mqSeries.MQDesconectar(mqSeries.queueManager, mqSeries.queue);
-                Escribe("Termina el acceso a la aplicación Bitácoras porque se presentó un error en la función MAIN. Función SQL: " + strFuncionSQL + ". Error. " + Err.Data + "-" + Err.Message);
+                Escribe(Err, "Error");
             }
         }
 
@@ -124,27 +124,27 @@ namespace Bitacoras
         {
             string section = "headerih";
             strFuncionHost = getValueAppConfig(section, "PRIMERVALOR"); 
-            strHeaderTagIni = getValueAppConfig(section, "IHTAGINI");
+            strHeaderTagIni = $"<{getValueAppConfig(section, "IHTAGINI")}>";
             strIDProtocol = getValueAppConfig(section, "IDPROTOCOL");
             strLogical = getValueAppConfig(section, "FGBitacora");
             strAccount = getValueAppConfig(section, "ACCOUNT");
             strUser = getValueAppConfig(section, "User");
             strSeqNumber = getValueAppConfig(section, "SEQNUMBER");
             strTXCode = getValueAppConfig(section, "TXCODE");
-            strUserOption = getValueAppConfig(section, "TXCODE");
+            strUserOption = getValueAppConfig(section, "USEROPT");
             strCommit = getValueAppConfig(section, "Commit");
             strMsgType =getValueAppConfig(section, "MSGTYPE"); 
             strProcessType =getValueAppConfig(section, "PROCESSTYPE"); 
             strChannel =getValueAppConfig(section, "CHANNEL"); 
             strPreFormat =getValueAppConfig(section, "PREFORMATIND"); 
             strLenguage =getValueAppConfig(section, "LANGUAGE"); 
-            strHeaderTagEnd =getValueAppConfig(section, "IHTAGEND");
+            strHeaderTagEnd = $"</{getValueAppConfig(section, "IHTAGEND")}>";
 
             section = "headerme";
 
-            strMETAGINI = getValueAppConfig(section,"METAGINI");
+            strMETAGINI = $"<{getValueAppConfig(section,"METAGINI")}>";
             strMsgTypeCole = getValueAppConfig(section,"TIPOMSG");
-            strMETAGEND = getValueAppConfig(section,"METAGEND");
+            strMETAGEND = $"</{getValueAppConfig(section,"METAGEND")}>";
 
             section = "defaultValues";
 
@@ -192,31 +192,32 @@ namespace Bitacoras
             try
             {
                 mqSeries = new MqSeries();
-                Escribe("");
-                Escribe("Inicia envío de mensajes a Host: " + gsAccesoActual + " Función SQL: " + strFuncionSQL);
+                Escribe("Inicia envío de mensajes a Host: " + gsAccesoActual + " Función SQL: " + strFuncionSQL, "Mensaje");
 
-                if (mqSeries.MQConectar(Gs_MQManager, mqSeries.queueManager) == "")
+                if (mqSeries.ConectarMQ(Gs_MQManager))
                 {
+                    //SetParameterAppSettings("valorTk14", "TKCONSECUTIVO", "algo");
                     mqSeries.blnConectado = true;
                 }
                 else
                 {
-                    Escribe("Fallo conexión MQ-Manager " + Gs_MQManager + ": " + mqSeries.queueManager.ReasonCode + " - " + mqSeries.queueManager.ReasonName);
+                    Escribe("Fallo conexión MQ-Manager " , "Mensaje");
+                    return;
                 }
 
-                sFechaEnvio = Left(DateTime.Now.ToString("yyyymmddhhnnss") + Space(26), 26);
+                sFechaEnvio = Left(DateTime.Now.ToString("yyyymmddhhmmss") + Space(26), 26);
                 sEnvioConse = Left(getValueAppConfig("valorTk14", "TKCONSECUTIVO") + Space(1), 1);
 
-                Ls_MsgColector = (strFuncionSQL + new String(' ', 8)).Substring(0, 8);
+                Ls_MsgColector = (strFuncionSQL + Space(8)).Substring(0, 8) + sFechaEnvio;
 
                 if (Ls_MsgColector.Length > 0)
                 {
                     Ls_MensajeMQ = ASTA_ENTRADA(Ls_MsgColector);
                     if (Ls_MensajeMQ != "")
                     {
-                        Escribe("Mensaje Enviado: " + Ls_MensajeMQ);
+                        Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
 
-                        if (mqSeries.MQEnviarMsg(mqSeries.queueManager, Gs_MQQueueEscritura, mqSeries.queue, mqSeries.queueMessage, Ls_MensajeMQ, strReplyToMQ))
+                        if (mqSeries.EnviarMensajeMQ(mqSeries.queueManager, Gs_MQQueueEscritura, mqSeries.queue, mqSeries.queueMessage, Ls_MensajeMQ, strReplyToMQ))
                         {
                             sMensajeEnvio = (sEnvioConse + 1).ToString();
 
@@ -224,31 +225,31 @@ namespace Bitacoras
                             {
                                 sMensajeEnvio = ((char)(1)).ToString();
                             }
-                            SetParameterAppSettings("valorTk14", "TKCONSECUTIVO", sMensajeEnvio);
+                            //SetParameterAppSettings("valorTk14", "TKCONSECUTIVO", sMensajeEnvio);
                         }
                         else
                         {
-                            Escribe("Se ha presentado un error al escribir la solicitud en la MQ QUEUE:");
+                            Escribe("Se ha presentado un error al escribir la solicitud en la MQ QUEUE:", "Mensaje");
                         }
                     }
                     else
                     {
-                        Escribe("Se ha presentado un error durante el armado del formato PS9 funcion ASTA_ENTRADA.Colector: " + Ls_MsgColector);
+                        Escribe("Se ha presentado un error durante el armado del formato PS9 funcion ASTA_ENTRADA.Colector: " + Ls_MsgColector, "Mensaje");
                     }
                 }
                 else
                 {
-                    Escribe("Se ha presentado un error al armar el Layout TKT14. No existe longitud en el Colector");
+                    Escribe("Se ha presentado un error al armar el Layout TKT14. No existe longitud en el Colector", "Mensaje");
                 }
 
                 mqSeries.MQDesconectar(mqSeries.queueManager, mqSeries.queue);
 
-                Escribe("Envio de solicitures TKT -> Host Terminado");
-                Escribe("Solicitudes enviadas a MQ: " + sMensajeEnvio);
+                Escribe("Envio de solicitures TKT -> Host Terminado", "Mensaje");
+                Escribe("Solicitudes enviadas a MQ: " + sMensajeEnvio, "Mensaje");
             }
             catch (Exception ex)
             {
-                Escribe("Se presentó un error durante la ejecución de la función ProcesoBDtoMQQUEUE : " + ex.Message);
+                Escribe(ex, "Error");
             }
 
         }
@@ -268,19 +269,19 @@ namespace Bitacoras
 
                 if (ls_TempColectorMsg.Length > Int32.Parse(strColectorMaxLeng))
                 {
-                    Escribe("La longitud del colector supera el maximo permitido");
+                    Escribe("La longitud del colector supera el maximo permitido", "Mensaje");
                     //GoTo ErrorASTA
                 }
 
                 ls_BloqueME = Left((strMETAGINI + Space(4)).Trim(), 4);
                 ls_BloqueME = ls_BloqueME + Right("0000" + (ls_TempColectorMsg.Length.ToString()), 4);
-                ls_BloqueME = ls_BloqueME + Left((strMsgTypeCole.Trim() + Space(5)), 5);
+                ls_BloqueME = ls_BloqueME + Left((strMsgTypeCole.Trim() + Space(1)), 1);
                 ls_BloqueME = ls_BloqueME + ls_TempColectorMsg;
                 ls_BloqueME = ls_BloqueME + Left(strMETAGEND + Space(5), 5);
 
                 if (ls_BloqueME.Length > Int32.Parse(strMsgMaxLeng))
                 {
-                    Escribe("La longitud del Bloque ME supera el maximo permitido");
+                    Escribe("La longitud del Bloque ME supera el maximo permitido", "Mensaje");
                     //GoTo ErrorASTA
                 }
 
@@ -310,13 +311,13 @@ namespace Bitacoras
                 ASTA_ENTRADA = ASTA_ENTRADA + Left(strUser.Trim() + Space(8), 8);
                 ASTA_ENTRADA = ASTA_ENTRADA + Left(strSeqNumber.Trim() + Space(8), 8);
                 ASTA_ENTRADA = ASTA_ENTRADA + Left(strTXCode.Trim() + Space(8), 8);
-                ASTA_ENTRADA = ASTA_ENTRADA + Left(strUserOption.Trim() + Space(8), 8);
+                ASTA_ENTRADA = ASTA_ENTRADA + Left(strUserOption.Trim() + Space(2), 2);
 
                 ln_longCOLECTOR = 65 + ls_BloqueME.Length;
 
                 if (ln_longCOLECTOR > Int32.Parse(strPS9MaxLeng.Trim()))
                 {
-                    Escribe("La longitud del Layout PS9 supera el maximo permitido");
+                    Escribe("La longitud del Layout PS9 supera el maximo permitido", "Mensaje");
                     //GoTo ErrorASTA
                 }
 
@@ -335,7 +336,7 @@ namespace Bitacoras
             }
             catch (Exception ex)
             {
-                mqSeries.Escribe(ex.Message);
+                Escribe(ex, "Error");
                 return ex.Message;
             }
         }
@@ -393,42 +394,84 @@ namespace Bitacoras
         /// <param name="value">valor nuevo</param>
         public void SetParameterAppSettings(string section, string key, string value)
         {
-            string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            string[] appPath_arr = appPath.Split('\\');
-
-            appPath = "";
-            for (int i = 0; i < (appPath_arr.Length - 2); i++)
+            try
             {
-                appPath = appPath + "\\" + appPath_arr[i];
+                string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string[] appPath_arr = appPath.Split('\\');
+
+                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
+                appPath = "";
+                for (int i = 0; i < (appPath_arr.Length - 1); i++)
+                {
+                    appPath = appPath + "\\" + appPath_arr[i];
+                }
+                appPath = appPath.Substring(1, appPath.Length - 1);
+                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
+                string configFile = System.IO.Path.Combine(appPath, "App.config");
+                Escribe("Variable entrada [configFile]: " + configFile, "Mensaje");
+                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                configFileMap.ExeConfigFilename = configFile;
+                System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+                config.AppSettings.Settings[$"{section}.{key}"].Value = value;
+
+                config.Save();
             }
-            appPath = appPath.Substring(1, appPath.Length - 1);
-
-            string configFile = System.IO.Path.Combine(appPath, "App.config");
-            ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-            configFileMap.ExeConfigFilename = configFile;
-            System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
-            config.AppSettings.Settings[$"{section}.{key}"].Value = value;
-
-            config.Save();
+            catch (Exception ex)
+            {
+                Escribe(ex, "Error");
+            }
+            
         }
 
         /// <summary>
         /// escribe en el log
         /// </summary>
         /// <param name="vData"></param>
-        public void Escribe(string vData)
+        public void Escribe(string vData, string tipo)
         {
+            string seccion = "escribeArchivoLOG";
             //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
             //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //string docPath = @"C:\tmp\log\";
-            string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "log.txt"),append:true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")),append:true))
                 {
-                    vData = "[" + DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss") + "]  Error: " + vData ;
+                    vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}" ;
                     Console.WriteLine(vData);
+                    outputFile.WriteLine(vData);
+                }
+
+            }
+        }
+
+        /// <summary>
+        /// escribe en el log
+        /// </summary>
+        /// <param name="vData"></param>
+        public void Escribe(Exception ex, string tipo)
+        {
+            string vData;
+            string seccion = "escribeArchivoLOG";
+            //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
+            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //string docPath = @"C:\tmp\log\";
+            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+
+            if (true)
+            {
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                {
+                    vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
+                        $"*{tipo}:  {ex.Message} {(char)13}" +
+                        $"*InnerException: {ex.InnerException} {(char)13}" +
+                        $"*Source: {ex.Source}  {(char)13}" +
+                        $"*Data: {ex.Data}  {(char)13}" +
+                        $"*HelpLink: {ex.HelpLink}  {(char)13}" +
+                        $"*TargetSite: {ex.TargetSite}  {(char)13}";
+                    Console.Write(vData);
                     outputFile.WriteLine(vData);
                 }
 

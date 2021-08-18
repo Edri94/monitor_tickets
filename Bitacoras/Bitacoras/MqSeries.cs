@@ -6,6 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
+//pruebas
+using IBM.WMQ.Nmqi;
+using System.Transactions;
+using System.EnterpriseServices;
+using System.Configuration;
+
 namespace Bitacoras
 {
     public class MqSeries
@@ -77,29 +84,187 @@ namespace Bitacoras
 
         private string QueueManagerName;
 
-     
+        //Variables prueba***************************
+        public MQQueueManager QMGR = null;
+        public MQQueueManager QMGR1 = null;
+        public MQQueue QUEUE = null;
+        public MQQueue QUEUE1 = null;
+        public MQPutMessageOptions pmo = null;
+        public MQMessage MSG = null;
+
+        //*******************************************
+
+        public MqSeries()
+        {
+        }
+
+        /// <summary>
+        /// Conectar al MQ
+        /// </summary>
+        /// <param name="strQueueManagerName"></param>
+        /// <param name="queueManager"></param>
+        /// <returns></returns>
+        public bool ConectarMQ(string strQueueManagerName)
+        {
+            bool ConectarMQ;
+            try
+            {
+                //QMGR = new MQQueueManager("usemq");
+                QMGR = new MQQueueManager(strQueueManagerName);
+                Escribe("Conectado satisfactoriamente : " + QMGR.Name, "Mensaje");
+
+                ConectarMQ = true;
+            }
+            catch (MQException mq_ex)
+            {
+                ConectarMQ = false;
+                Escribe(mq_ex, "Error");
+            }
+            catch (Exception ex)
+            {
+                ConectarMQ = false;
+                Escribe(ex, "Error");
+            }
+
+
+            return ConectarMQ;
+        }
+
+        /// <summary>
+        /// Abrir cola del MQ
+        /// </summary>
+        /// <returns></returns>
+        public bool AbrirColaMQ(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola, MQOPEN lngOpciones)
+        {
+            bool AbriColaMQ;
+            try
+            {
+                //QMGR = new MQQueueManager("usemq");
+                //QUEUE = QMGR.AccessQueue("SYSTEM.DEFAULT.LOCAL.QUEUE",
+                //    MQC.MQOO_INPUT_SHARED +
+                //    MQC.MQOO_OUTPUT +
+                //    MQC.MQOO_BROWSE
+                //);
+
+                QUEUE = QMGR.AccessQueue(strMQCola,
+                   (int)lngOpciones
+                );
+
+                AbriColaMQ = true;
+            }
+            catch (MQException mq_ex)
+            {
+                AbriColaMQ = false;
+                Escribe(mq_ex, "Error");
+            }
+            catch (Exception ex)
+            {
+                AbriColaMQ = false;
+                Escribe(ex, "Error");
+            }
+
+            return AbriColaMQ;
+            
+        }
+
+        /// <summary>
+        /// Enviar mensaje a la cola MQ
+        /// </summary>
+        /// <returns></returns>
+        public bool EnviarMensajeMQ(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola, MQMessage objMQMensaje, string ls_mensaje, string Ls_ReplayMQQueue, string strMensajeID = "")
+        {
+            long lngMqOpen;
+            bool EnviarMensajeMQ = false; 
+            try
+            {
+                Escribe($"Funcion EnviarMensajeMQ:{QMGR.Name}", "Mensaje");
+                //pmo = new MQPutMessageOptions();
+                //pmo.Options = MQC.MQPMO_SYNCPOINT;
+                //MSG = new MQMessage();
+                //QUEUE.Put(MSG, pmo);
+                //
+                lngMqOpen = (long)MQOPEN.MQOO_OUTPUT;
+
+                if (AbrirColaMQ(objMQManager, strMQCola, objMQCola, (MQOPEN)lngMqOpen))
+                {
+                    pmo = new MQPutMessageOptions();
+                    pmo.Options = MQC.MQPMO_SYNCPOINT;
+                    MSG = new MQMessage();
+                    QUEUE.Put(MSG, pmo);
+                    EnviarMensajeMQ = true;
+                }
+               
+               
+            }
+            catch(MQException mq_ex)
+            {
+                EnviarMensajeMQ = false;
+                Escribe(mq_ex, "Error");
+            }
+            catch (Exception ex)
+            {
+                EnviarMensajeMQ = false;
+                Escribe(ex, "Error");
+            }
+           
+
+            return EnviarMensajeMQ;
+        }
+
+        /// <summary>
+        /// Desconectar el MQ
+        /// </summary>
+        /// <returns></returns>
+        public bool DesconectarMQ()
+        {
+            bool DesconectarMQ;
+            try
+            {
+                QMGR.Disconnect();
+                Escribe("Desconectado satisfactoriamente : " + queueManager.Name, "Mensaje");
+                DesconectarMQ = true;
+            }
+            catch (MQException mq_ex)
+            {
+                DesconectarMQ = false;
+                Escribe(mq_ex, "Error");
+            }
+            catch (Exception ex)
+            {
+                DesconectarMQ = false;
+                Escribe(ex, "Error");
+            }
+            return DesconectarMQ;
+        }
+
+        //*****************************************************************************************************************
+
         public string MQConectar(string strQueueManagerName, MQQueueManager queueManager)
         {
-            string strReturn;
-  
+            string MQConectar ="";
+
             try
             {
                 queueManager = new MQQueueManager(strQueueManagerName);
                 //Set objMQManager = objMQConexion.AccessQueueManager(strMQManager)
-                strReturn = "Connected Successfully : " + queueManager.Name;
-                
-                Escribe(strReturn);
+                MQConectar = "Connected Successfully : " + queueManager.Name;
+
+                Escribe(MQConectar, "Mensaje");
+
+                return MQConectar;
             }
             catch (MQException exp)
             {
-
-                //string strError = getMQRCText(exp.Reason);
-                Escribe("Conecta MQ ExcepcionMQ Error trying to create Queue" + "Manager Object. Error Message: " + exp.Message + ", Reason: " + exp.Reason + ", ReasonCode: " + exp.ReasonCode);
-                strReturn = "Exception: " + exp.Message;
-                //Escribe("");
+                Escribe(exp, "Error");
+                MQConectar = "Exception: " + exp.Message;
+                return MQConectar;
             }
-
-            return strReturn;
+            catch (Exception ex)
+            {
+                MQConectar = ex.Message;
+                Escribe(ex, "Error");
+                return MQConectar;
+            }         
         }
 
 
@@ -130,39 +295,48 @@ namespace Bitacoras
 
                 return MQDesconectar;
             }
-            catch (Exception ex)
+            catch (MQException exp)
             {
-                Escribe(ex.Message);
+                Escribe(exp, "Error");
                 return MQDesconectar;
             }
+            catch (Exception ex)
+            {
+                Escribe(ex, "Error");
+                return MQDesconectar;
+            }
+           
         }
 
         public bool MQEnviarMsg(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola, MQMessage objMQMensaje, string ls_mensaje, string Ls_ReplayMQQueue, string strMensajeID = "")
         {
             MQPutMessageOptions mqsMQOpciones;
-            string strMensaje;
+            bool MQEnviarMsg = false;
 
             try
             {
-                //Set mqsMQOpciones = objMQConexion.AccessPutMessageOptions
-                //mqsMQOpciones.Options = mqsMQOpciones.Options Or MQPMO_NO_SYNCPOINT
-                //Set objMQMensaje = objMQConexion.AccessMessage
-
                 if (MQAbrirCola(objMQManager, strMQCola, objMQCola, MQOPEN.MQOO_OUTPUT))
                 {
 
                 }
                 return true;
             }
+            catch (MQException exp)
+            {
+                Escribe(exp, "Error");
+                return MQEnviarMsg;
+            }
             catch (Exception ex)
             {
-
-                throw;
+                Escribe(ex, "Error");
+                return MQEnviarMsg;
             }
+            
         }
 
         private bool MQAbrirCola(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola, MQOPEN lngOpciones)
         {
+            bool MQAbrirCola = false;
             try
             {
 
@@ -174,13 +348,14 @@ namespace Bitacoras
             }
             catch (MQException exp)
             {
-                    return false;
+                Escribe(exp, "Error");
+                return MQAbrirCola;
             }
             catch (Exception ex)
             {
-                return false;
-            }
-           
+                Escribe(ex, "Error");
+                return MQAbrirCola;
+            }         
         }
 
         public bool MQCerrarCola(MQQueue objMCola)
@@ -198,35 +373,83 @@ namespace Bitacoras
                 }
                 return MQCerrarCola;
             }
-            catch (Exception ex)
+            catch (MQException exp)
             {
-                Escribe(ex.Message);
+                Escribe(exp, "Error");
                 return MQCerrarCola;
             }
+            catch (Exception ex)
+            {
+                Escribe(ex, "Error");
+                return MQCerrarCola;
+            }           
         }
-
-
         /// <summary>
         /// escribe en el log
         /// </summary>
         /// <param name="vData"></param>
-        public void Escribe(string vData)
+        public void Escribe(string vData, string tipo)
         {
+            string seccion = "escribeArchivoLOG";
             //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
             //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //string docPath = @"C:\tmp\log\";
-            string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "log.txt"), append: true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
                 {
-                    vData = "[" + DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss") + "]  Error: " + vData;
+                    vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}";
                     Console.WriteLine(vData);
                     outputFile.WriteLine(vData);
                 }
 
             }
         }
+
+        /// <summary>
+        /// Obtiene valor del parametro dado desde el app.config
+        /// </summary>
+        /// <param name="section">Seccion donde buscara</param>
+        /// <param name="value">Valor que buscas</param>
+        /// <returns></returns>
+        private string getValueAppConfig(string section, string key)
+        {
+            return ConfigurationManager.AppSettings[$"{section}.{key}"]; ;
+        }
+
+        /// <summary>
+        /// escribe en el log
+        /// </summary>
+        /// <param name="vData"></param>
+        public void Escribe(Exception ex, string tipo)
+        {
+            string vData;
+            string seccion = "escribeArchivoLOG";
+            //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
+            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //string docPath = @"C:\tmp\log\";
+            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+
+            if (true)
+            {
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                {
+                    vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
+                        $"*{tipo}:  {ex.Message} {(char)13}" +
+                        $"*InnerException: {ex.InnerException} {(char)13}" +
+                        $"*Source: {ex.Source}  {(char)13}" +
+                        $"*Data: {ex.Data}  {(char)13}" +
+                        $"*HelpLink: {ex.HelpLink}  {(char)13}" +
+                        $"*TargetSite: {ex.TargetSite}  {(char)13}";
+                    Console.Write(vData);
+                    outputFile.WriteLine(vData);
+                }
+
+            }
+        }
+
     }
 }
+

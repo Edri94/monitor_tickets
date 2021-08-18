@@ -15,17 +15,12 @@ namespace Probando_Bitacora
             Bitacora bitacora = new Bitacora();
             try
             { 
-                bitacora.ProcesarBitacora("D:\\TEMPORAL\\", "QMDCEDTK - QRT.CEDTK.ENVIO.MQD8 - 1 - INLOGTDD");
-                Console.ReadKey();
+                bitacora.ProcesarBitacora("D:\\TEMPORAL\\", "QMDCEDTK-QRT.CEDTK.ENVIO.MQD8-1-INLOGTDD");
             }
             catch (Exception ex)
             {
-                bitacora.Escribe("ERROR Message: " + ex.Message + " Errror Data: " + ex.Data);
-                Console.WriteLine(ex.Message);
-            }
-          
-
-
+                bitacora.Escribe("ERROR Message: " + ex.Message + " Errror Data: " + ex.Data, "Error");
+            }        
         }
     }
 }
