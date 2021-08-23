@@ -322,11 +322,12 @@ namespace Mensajes
                 strQuery = strQuery + "tipo " + (char)13;                                  // 13  Tipo  A-Alta, B-Baja, M-Mantenimiento
                 strQuery = strQuery + "FROM" + (char)13;
                 strQuery = strQuery + mQ.gsNameDB + "..TMP_FUNCIONARIOS_PU" + (char)13;
-                strQuery = strQuery + "WHERE status_envio = 0";
+                //strQuery = strQuery + "WHERE status_envio = 0";
+                strQuery = strQuery + "WHERE status_envio = 1 and CONVERT(DATETIME, fecha_ultimo_mant, 105) > '05-12-2016 00:00:00'";
 
                 DataTable rssRegistro = mQ.ConsultaMQQUEUEFunc(strQuery);
 
-                if (rssRegistro != null) //Not rssRegistro.EOF
+                if (rssRegistro.Rows.Count > 0) //Not rssRegistro.EOF
                 {
                     if (mQ.MQConectar(Gs_MQManager, mQ.mqManager))
                     {
@@ -351,22 +352,23 @@ namespace Mensajes
                     foreach (DataRow row in rssRegistro.Rows)
                     {
                         //Almacenando variables
-                        ls_IDFuncionario = Left(row[""].ToString(), 7);
-                        ls_CentroRegional = Left(row[""].ToString(), 4);
-                        ls_NumRegistro = Left(row[""].ToString(), 8);
-                        ls_Producto = Left(row[""].ToString(), 2);
-                        ls_SubProducto = Left(row[""].ToString(), 10);
+                        ls_IDFuncionario = Left(Int32.Parse(row["id_funcionario"].ToString()).ToString("D7"), 7);
+                        ls_CentroRegional = Left(row["centro_regional"].ToString() + Space(4), 4);
+                        ls_NumRegistro = Left(row["numero_funcionario"].ToString() + Space(8), 8);
+                        ls_Producto = Left(row["producto"].ToString() + Space(2), 2);
+                        ls_SubProducto = Right("0000000000" + row["subproducto"].ToString(), 10);
 
-                        if (row[""].ToString() != "")
+                        if (row["fecha_alta"].ToString() != "")
                         {
-                            ls_FechaAlta = row[""].ToString();
-                            //ls_FechaAlta = Mid(ls_FechaAlta, 1, 10)
+                            ls_FechaAlta = row["fecha_alta"].ToString();
+                            ls_FechaAlta = Mid(ls_FechaAlta, 1, 10);
                         }
 
-                        ls_TipoPeticion = Left(row[""].ToString(), 1);
-                        ls_Fecha = Left(row[""].ToString() + Space(8), 8);
-                        ls_IdTransaccion = Left(row[""].ToString(), 10);
-                        ls_Tipo = Left(row[""].ToString(), 1);
+                        ls_TipoPeticion = Left(row["tipo_peticion"].ToString() + "0", 1);
+                        var prueba = row["columna_12"].ToString();
+                        ls_Fecha = Left(row["columna_11"].ToString() + Space(8), 8);
+                        ls_IdTransaccion = Left(Int32.Parse(row["columna_12"].ToString()).ToString("D10") + Space(7), 10);
+                        ls_Tipo = Left(row["tipo"].ToString() + Space(1), 1);
 
                         Ls_MsgColector = Left(strFuncionSQL.Trim() + "        ", 8);
                         Ls_MsgColector = Ls_MsgColector + ls_Fecha + ls_Hora;
@@ -529,19 +531,19 @@ namespace Mensajes
                         i++;
 
                         ls_Operacion = Int32.Parse(row["operacion"].ToString()).ToString("D7");
-                        ls_Oficina = Int32.Parse(mQ.rssRegistro[1].Trim()).ToString("D4");
-                        ls_NumeroFunc = mQ.rssRegistro[2].Trim() + Space(8 - mQ.rssRegistro[2].Trim().Length);
-                        ls_Transaccion = Int32.Parse(mQ.rssRegistro[3].Trim()).ToString("D4");
-                        ls_CodigoOperacion = mQ.rssRegistro[4].Trim() + Space(3);
-                        ls_Cuenta = mQ.rssRegistro[5].Trim() + Space(10);
-                        ls_Divisa = mQ.rssRegistro[6].Trim() + Space(3);
-                        ls_Importe = mQ.rssRegistro[7].Trim();
-                        ls_Fecha_Ope = mQ.rssRegistro[8].Trim();
-                        ls_Folio_Ope = Int32.Parse(mQ.rssRegistro[9].Trim()).ToString("D12");
-                        ls_Status_Envio = Int32.Parse(mQ.rssRegistro[10].Trim()).ToString("D1");
+                        ls_Oficina = Int32.Parse(row["oficina"].ToString()).ToString("D4");
+                        ls_NumeroFunc = row["numero_funcionario"].ToString() + Space(8 - row["numero_funcionario"].ToString().Length);
+                        ls_Transaccion = row["id_transaccion"].ToString();
+                        ls_CodigoOperacion = row["codigo_operacion"].ToString() + Space(3);
+                        ls_Cuenta = row["cuenta"].ToString() + Space(10);
+                        ls_Divisa = row["divisa"].ToString() + Space(3);
+                        ls_Importe = row["importe"].ToString();
+                        ls_Fecha_Ope = row["fecha_operacion"].ToString();
+                        ls_Folio_Ope = Int64.Parse(row["folio_autorizacion"].ToString()).ToString("D12");
+                        ls_Status_Envio = Int32.Parse(row["status_envio"].ToString()).ToString("D1");
 
-                        ls_Fecha = Left(mQ.rssRegistro[0].Trim() + Space(8), 8);
-                        ls_Hora = Left(mQ.rssRegistro[0].Trim().Replace(':', ' ') + Space(4), 4);
+                        ls_Fecha = Left(row["fecha"].ToString() + Space(8), 8);
+                        ls_Hora = Left(row["hora"].ToString().Replace(':', ' ') + Space(4), 4);
 
                         Ls_MsgColector = Left(strFuncionSQL.Trim() + "        ", 8);
                         Ls_MsgColector = Ls_MsgColector + ls_Fecha + ls_Hora;
@@ -808,6 +810,18 @@ namespace Mensajes
         public string Left(string cadena, int posiciones)
         {
             return cadena.Substring(0, posiciones);
+        }
+
+        /// <summary>
+        /// Devuelve una cadena que contiene un número de caracteres especificado a partir de una posición especificada de una cadena.
+        /// </summary>
+        /// <param name="cadena"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public string Mid(string cadena, int start, int length)
+        {
+            return cadena.Substring(start, length);
         }
         /// <summary>
         /// Devuelve una variante ( cadena ) que contiene un número específico de caracteres del lado derecho de una cadena.
