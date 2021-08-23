@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 
 
 //pruebas
-using IBM.WMQ.Nmqi;
-using System.Transactions;
-using System.EnterpriseServices;
 using System.Configuration;
 
 namespace Bitacoras

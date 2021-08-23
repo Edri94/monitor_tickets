@@ -1,2 +1,10 @@
-C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.AssemblyReference.cache
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\bin\Debug\Mensajes.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\bin\Debug\Mensajes.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\bin\Debug\amqmdnet.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\bin\Debug\ConexionBDSQL.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\bin\Debug\ConexionBDSQL.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.AssemblyReference.cache
