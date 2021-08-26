@@ -1,0 +1,13 @@
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\Probando_Mensajes.exe.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\Probando_Mensajes.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\Probando_Mensajes.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\Mensajes.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\ConexionBDSQL.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\amqmdnet.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\Mensajes.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\bin\Release\ConexionBDSQL.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\obj\Release\Probando_Mensajes.csproj.AssemblyReference.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\obj\Release\Probando_Mensajes.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\obj\Release\Probando_Mensajes.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\obj\Release\Probando_Mensajes.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Probando_Mensajes\obj\Release\Probando_Mensajes.pdb

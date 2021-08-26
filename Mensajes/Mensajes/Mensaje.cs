@@ -115,7 +115,7 @@ namespace Mensajes
             {
                 return;
             }
-
+            Escribe("", $"{(char)13}[INICIA PROGRAMA]");
             Escribe("Comienza la función MAIN de la aplicación MensajesMQ: " + DateTime.Now.ToString("dd/MM/yyyy") + " Tipo Función: '" + gsEjecutable + "'", "Mensaje");
             mQ.gsAccesoActual = DateTime.Now.ToString();
 
@@ -186,6 +186,8 @@ namespace Mensajes
                 string conn_str = $"Data source ={mQ.gsSrvr}; uid ={mQ.gsUserDB}; PWD ={mQ.gsPswdDB}; initial catalog = {mQ.gsNameDB}";
                 mQ.cnnConexion = new ConexionBDSQL.ConexionBD(conn_str);
 
+                Escribe($"Conectado satisfactoriamente a BD: {mQ.gsSrvr}  {mQ.gsNameDB}", "Mensaje");
+
                 //List<Bitacora_Errores_Mensajes_Pu> lst = mQ.ConsultaBitacoraErroresMensajes("2021-01-01", "00:00:00");
 
                 ConectDB = true;
@@ -212,13 +214,13 @@ namespace Mensajes
             string section = "headerih";
 
             strFuncionHost =  getValueAppConfig(section,"PRIMERVALOR");
-            strHeaderTagIni =  getValueAppConfig(section,"IHTAGINI");
+            strHeaderTagIni =  $"<{getValueAppConfig(section,"IHTAGINI")}>";
             strIDProtocol =  getValueAppConfig(section,"IDPROTOCOL");
             strLogical =  getValueAppConfig(section,"Logical");
             strAccount =  getValueAppConfig(section,"ACCOUNT");
             strUser =  getValueAppConfig(section,"User");
             strSeqNumber =  getValueAppConfig(section,"SEQNUMBER");
-            strTXCode =  getValueAppConfig(section,"TXCODE");
+            strTXCode =  getValueAppConfig(section,"TXCODE"); //vacio
             strUserOption =  getValueAppConfig(section,"USEROPT");
             strCommit =  getValueAppConfig(section,"Commit");
             strMsgType =  getValueAppConfig(section,"MSGTYPE");
@@ -226,13 +228,13 @@ namespace Mensajes
             strChannel =  getValueAppConfig(section,"CHANNEL");
             strPreFormat =  getValueAppConfig(section,"PREFORMATIND");
             strLenguage =  getValueAppConfig(section,"LANGUAGE");
-            strHeaderTagEnd =  getValueAppConfig(section,"IHTAGEND");
+            strHeaderTagEnd =  $"</{getValueAppConfig(section,"IHTAGEND")}>";
 
             section = "headerme";
 
-            strMETAGINI = getValueAppConfig(section, "METAGINI");
+            strMETAGINI = $"<{getValueAppConfig(section, "METAGINI")}>";
             strMsgTypeCole = getValueAppConfig(section, "TIPOMSG");
-            strMETAGEND = getValueAppConfig(section, "METAGEND");
+            strMETAGEND = $"</{getValueAppConfig(section, "METAGEND")}>";
 
             section = "defaultValues";
 
@@ -262,14 +264,17 @@ namespace Mensajes
 
             if (Gs_MQManager.Trim() == "")
             {
+                Escribe("Gs_MQManager.Trim(): " + Gs_MQManager.Trim(), "Mensaje");
                 ls_msg = ls_msg + "";
             }
             if (Gs_MQQueueEscritura.Trim() == "")
             {
+                Escribe("Gs_MQQueueEscritura.Trim(): " + Gs_MQQueueEscritura.Trim(), "Mensaje");
                 ls_msg = ls_msg + "";
             }
             if (ls_msg == "")
             {
+                Escribe("ls_msg:  " + ls_msg, "Mensaje");
                 return true;
             }
             ps_MsgVal = ls_msg;
@@ -282,7 +287,7 @@ namespace Mensajes
             string Ls_MsgColector;       // Cadena para almecenar el COLECTOR
             string Ls_HeaderMsg;       // Cadena para almacenar el HEADER del mensaje
             int NumeroMsgEnviados;      // Contador para almacenar el número de mensajes procesados
-            string[] las_Funcionarios = null;       // Arreglo para ingresar todos los registros que han sido enviados correctamente
+            List<MensajeEnviar> las_Funcionarios = new List<MensajeEnviar>();       // Arreglo para ingresar todos los registros que han sido enviados correctamente
                                              // Para el armado de la solicitud
             string ls_IDFuncionario;
             string ls_CentroRegional;       // 1  centro_regional
@@ -323,13 +328,13 @@ namespace Mensajes
                 strQuery = strQuery + "FROM" + (char)13;
                 strQuery = strQuery + mQ.gsNameDB + "..TMP_FUNCIONARIOS_PU" + (char)13;
                 //strQuery = strQuery + "WHERE status_envio = 0";
-                strQuery = strQuery + "WHERE status_envio = 1 and CONVERT(DATETIME, fecha_ultimo_mant, 105) > '05-12-2016 00:00:00'";
+                strQuery = strQuery + "WHERE status_envio = 1 and CONVERT(DATETIME, fecha_ultimo_mant, 105) > '05-12-2016 00:00:00'"; //cambiar
 
                 DataTable rssRegistro = mQ.ConsultaMQQUEUEFunc(strQuery);
 
-                if (rssRegistro.Rows.Count > 0) //Not rssRegistro.EOF
+                if (rssRegistro.Rows.Count > 0) 
                 {
-                    if (mQ.MQConectar(Gs_MQManager, mQ.mqManager))
+                    if (mQ.ConectarMQ(Gs_MQManager)) //cambiar
                     {
                         mQ.blnConectado = true;
                     }
@@ -352,11 +357,11 @@ namespace Mensajes
                     foreach (DataRow row in rssRegistro.Rows)
                     {
                         //Almacenando variables
-                        ls_IDFuncionario = Left(Int32.Parse(row["id_funcionario"].ToString()).ToString("D7"), 7);
-                        ls_CentroRegional = Left(row["centro_regional"].ToString() + Space(4), 4);
-                        ls_NumRegistro = Left(row["numero_funcionario"].ToString() + Space(8), 8);
-                        ls_Producto = Left(row["producto"].ToString() + Space(2), 2);
-                        ls_SubProducto = Right("0000000000" + row["subproducto"].ToString(), 10);
+                        ls_IDFuncionario = Left(Int32.Parse(row["id_funcionario"].ToString()).ToString("D7").Trim() + Space(7), 7);
+                        ls_CentroRegional = Left(row["centro_regional"].ToString().Trim() + Space(4), 4);
+                        ls_NumRegistro = Left(row["numero_funcionario"].ToString().Trim() + Space(8), 8);
+                        ls_Producto = Left(row["producto"].ToString().Trim() + Space(2), 2);
+                        ls_SubProducto = Right("0000000000" + row["subproducto"].ToString().Trim(), 10);
 
                         if (row["fecha_alta"].ToString() != "")
                         {
@@ -364,11 +369,11 @@ namespace Mensajes
                             ls_FechaAlta = Mid(ls_FechaAlta, 1, 10);
                         }
 
-                        ls_TipoPeticion = Left(row["tipo_peticion"].ToString() + "0", 1);
-                        var prueba = row["columna_12"].ToString();
-                        ls_Fecha = Left(row["columna_11"].ToString() + Space(8), 8);
-                        ls_IdTransaccion = Left(Int32.Parse(row["columna_12"].ToString()).ToString("D10") + Space(7), 10);
-                        ls_Tipo = Left(row["tipo"].ToString() + Space(1), 1);
+                        ls_TipoPeticion = Left(row["tipo_peticion"].ToString().Trim() + "0", 1);                     
+                        ls_Fecha = Left(row["columna_11"].ToString().Trim() + Space(8), 8);
+                        ls_Hora = Left(row["columna_12"].ToString().Trim().Replace(":", "") + Space(4), 4);
+                        ls_IdTransaccion = Left(Int32.Parse(row["id_transaccion"].ToString().Trim()).ToString("D10") + Space(7), 10);
+                        ls_Tipo = Left(row["tipo"].ToString().Trim() + Space(1), 1);
 
                         Ls_MsgColector = Left(strFuncionSQL.Trim() + "        ", 8);
                         Ls_MsgColector = Ls_MsgColector + ls_Fecha + ls_Hora;
@@ -386,10 +391,10 @@ namespace Mensajes
                             if (Ls_MensajeMQ != "")
                             {
                                 Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
-                                if (mQ.MQEnviarMsg(mQ.mqManager, Gs_MQQueueEscritura, mQ.mqsEscribir, mQ.mqsMsgEscribir, Ls_MensajeMQ, strReplyToMQ, sPersistencia, sExpirar))
+                                if (mQ.EnviarMensajeMQ(mQ.queueManager, Gs_MQQueueEscritura, mQ.queue, mQ.queueMessage, Ls_MensajeMQ, strReplyToMQ))
                                 {
                                     //ReDim Preserve las_Funcionarios(NumeroMsgEnviados)
-                                    las_Funcionarios[NumeroMsgEnviados] = ls_IDFuncionario;
+                                    las_Funcionarios.Add(new MensajeEnviar { NumMensaje = NumeroMsgEnviados, Msj = ls_IDFuncionario });
                                     NumeroMsgEnviados = NumeroMsgEnviados + 1;
                                 }
                                 else
@@ -428,7 +433,7 @@ namespace Mensajes
                 {
                     Escribe("No existen registros en la consulta de los datos de tabla TMP_FUNCIONARIOS_PU. ProcesoBDtoMQQUEUEFunc", "Mensaje");
                 }
-                mQ.MQDesconectar(mQ.mqManager, mQ.mqsEscribir);
+                mQ.DesconectarMQ();
 
                 if (NumeroMsgEnviados > 0)
                 {
@@ -455,10 +460,10 @@ namespace Mensajes
         {
             string Ls_MensajeMQ;       // Cadena con el mensaje armado con los registros de la base de datos
             string Ls_MsgColector;       // Cadena para almecenar el COLECTOR
-            string Ls_HeaderMsg;       // Cadena para almacenar el HEADER del mensaje
+            string Ls_HeaderMsg;      // Cadena para almacenar el HEADER del mensaje
             string strQuery;       // Cadena para almacenar el Query a ejecutarse en la base de datos
             int NumeroMsgEnviados;      // Contador para almacenar el número de mensajes procesados
-            string[] las_Autorizaciones;    // Arreglo para ingresar todos los registros que han sido enviados correctamente
+            List<MensajeEnviar> las_Autorizaciones = new List<MensajeEnviar>(); ;    // Arreglo para ingresar todos los registros que han sido enviados correctamente
                                             // Para el armado de la solicitud
             string ls_Operacion;    // 1  operacion
             string ls_Oficina;    // 2  oficina
@@ -499,14 +504,13 @@ namespace Mensajes
                 strQuery = strQuery + "FROM " + (char)13;
                 strQuery = strQuery + "TMP_AUTORIZACIONES_PU" + (char)13;
                 //strQuery = strQuery + "WHERE status_envio = 0";
-                strQuery = strQuery + "WHERE status_envio = 1 AND CONVERT(DATETIME, fecha_operacion, 12) > '2020-01-01 00:00:00'";
+                strQuery = strQuery + "WHERE status_envio = 1 AND CONVERT(DATETIME, fecha_operacion, 12) > '2020-01-01 00:00:00'"; //cambiar
 
                 DataTable rssRegistro = mQ.ConsultaMQQUEUEAuto(strQuery);
-                las_Autorizaciones = null;
 
                 if (rssRegistro.Rows.Count > 0)
                 {
-                    if (mQ.MQConectar(Gs_MQManager, mQ.mqManager))
+                    if (mQ.ConectarMQ(Gs_MQManager))//cambiar
                     {
                         mQ.blnConectado = true;
                     }
@@ -530,20 +534,20 @@ namespace Mensajes
                     {
                         i++;
 
-                        ls_Operacion = Int32.Parse(row["operacion"].ToString()).ToString("D7");
-                        ls_Oficina = Int32.Parse(row["oficina"].ToString()).ToString("D4");
-                        ls_NumeroFunc = row["numero_funcionario"].ToString() + Space(8 - row["numero_funcionario"].ToString().Length);
-                        ls_Transaccion = row["id_transaccion"].ToString();
-                        ls_CodigoOperacion = row["codigo_operacion"].ToString() + Space(3);
-                        ls_Cuenta = row["cuenta"].ToString() + Space(10);
-                        ls_Divisa = row["divisa"].ToString() + Space(3);
+                        ls_Operacion = Int32.Parse(row["operacion"].ToString()).ToString("D7").Trim();
+                        ls_Oficina = Int32.Parse(row["oficina"].ToString()).ToString("D4").Trim();
+                        ls_NumeroFunc = row["numero_funcionario"].ToString() + Space(8 - row["numero_funcionario"].ToString().Length).Trim();
+                        ls_Transaccion = row["id_transaccion"].ToString().Trim();
+                        ls_CodigoOperacion = row["codigo_operacion"].ToString() + Space(3).Trim();
+                        ls_Cuenta = row["cuenta"].ToString() + Space(10).Trim();
+                        ls_Divisa = row["divisa"].ToString() + Space(3).Trim();
                         ls_Importe = row["importe"].ToString();
                         ls_Fecha_Ope = row["fecha_operacion"].ToString();
                         ls_Folio_Ope = Int64.Parse(row["folio_autorizacion"].ToString()).ToString("D12");
-                        ls_Status_Envio = Int32.Parse(row["status_envio"].ToString()).ToString("D1");
+                        ls_Status_Envio = Int32.Parse(row["status_envio"].ToString()).ToString("D1").Trim();
 
                         ls_Fecha = Left(row["fecha"].ToString() + Space(8), 8);
-                        ls_Hora = Left(row["hora"].ToString().Replace(':', ' ') + Space(4), 4);
+                        ls_Hora = Left(row["hora"].ToString().Replace(':', ' ').Trim() + Space(4), 4);
 
                         Ls_MsgColector = Left(strFuncionSQL.Trim() + "        ", 8);
                         Ls_MsgColector = Ls_MsgColector + ls_Fecha + ls_Hora;
@@ -559,10 +563,14 @@ namespace Mensajes
                             if (Ls_MensajeMQ != "")
                             {
                                 Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
-                                if (mQ.MQEnviarMsg(mQ.mqManager, Gs_MQQueueEscritura, mQ.mqsEscribir, mQ.mqsMsgEscribir, Ls_MensajeMQ, strReplyToMQ, sPersistencia, sExpirar))
+                                if (mQ.EnviarMensajeMQ(mQ.queueManager, Gs_MQQueueEscritura, mQ.queue, mQ.queueMessage, Ls_MensajeMQ, strReplyToMQ))
                                 {
-                                    las_Autorizaciones[NumeroMsgEnviados] = ls_Operacion;
+                                    Escribe("Paso 1", "mensaje");
+                                    Escribe($"las_Autorizaciones[{NumeroMsgEnviados}] = {ls_Operacion}", "mensaje");
+                                    las_Autorizaciones.Add(new MensajeEnviar { NumMensaje = NumeroMsgEnviados, Msj = ls_Operacion });
+                                    Escribe("Paso 2", "mensaje");
                                     NumeroMsgEnviados = NumeroMsgEnviados + 1;
+                                    Escribe("Paso 3", "mensaje");
                                 }
                                 else
                                 {
@@ -606,8 +614,9 @@ namespace Mensajes
                 {
                     Escribe("Cero registros en la consulta de los datos, tabla TMP_AUTORIZACIONES_PU. ProcesoBDtoMQQUEUEAuto", "Mensaje");
                 }
-
-                mQ.MQDesconectar(mQ.mqManager, mQ.mqsEscribir);
+                Escribe(" mQ.DesconectarMQ(); Inicio", "Mensaje");
+                mQ.DesconectarMQ();
+                Escribe(" mQ.DesconectarMQ(); Fin", "Mensaje");
 
                 if (NumeroMsgEnviados > 0)
                 {
@@ -644,7 +653,7 @@ namespace Mensajes
                     return "ErrorASTA";
                 }
 
-                ls_BloqueME = Left(strMETAGINI +"    ", 4);
+                ls_BloqueME = Left(strMETAGINI.Trim() +"    ", 4);
                 ls_BloqueME = ls_BloqueME + Right("0000" + ls_TempColectorMsg.Length.ToString(),4);
                 ls_BloqueME = ls_BloqueME + Left(strMsgTypeCole.Trim() + " ", 1);
                 ls_BloqueME = ls_BloqueME + ls_TempColectorMsg;
@@ -673,7 +682,7 @@ namespace Mensajes
                         var Rnd = new Random(DateTime.Now.Second * 1000);
                         ln_AccTerminal = Rnd.Next();
                     } while (ln_AccTerminal > 0 && ln_AccTerminal < 2000);
-                    ASTA_ENTRADA = ASTA_ENTRADA + Left(ln_AccTerminal.ToString("D4") + "        ", 8); ;
+                    ASTA_ENTRADA = ASTA_ENTRADA + Left(ln_AccTerminal.ToString("D4") + "        ", 8); 
                 }
                 else
                 {
@@ -713,10 +722,10 @@ namespace Mensajes
                 Escribe(Err, "Error");
             }
 
-            return "";
+            return ASTA_ENTRADA;
         }
 
-        private bool ActualizaRegistrosFunc(string[] IDFuncionario)
+        private bool ActualizaRegistrosFunc(List<MensajeEnviar> IDFuncionario)
         {
             bool ActualizaRegistrosFunc = false;
 
@@ -747,7 +756,7 @@ namespace Mensajes
             return ActualizaRegistrosFunc;
         }
 
-        private bool ActualizaRegistrosAuto(string[] IDAutorizacion)
+        private bool ActualizaRegistrosAuto(List<MensajeEnviar> IDAutorizacion)
         {
             bool ActualizaRegistrosAuto = false;
 
@@ -878,10 +887,13 @@ namespace Mensajes
         public void Escribe(string vData, string tipo)
         {
             string seccion = "escribeArchivoLOG";
-
+            
             if (Mb_GrabaLog)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                string fecha = DateTime.Now.ToString("ddMMyyyy");
+                string nombre_archivo = $"{fecha}_{getValueAppConfig(seccion, "logFileName")}";
+                
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}";
                     Console.WriteLine(vData);
@@ -902,7 +914,10 @@ namespace Mensajes
 
             if (Mb_GrabaLog)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                string fecha = DateTime.Now.ToString("ddMMyyyy");
+                string nombre_archivo = $"{fecha}_{getValueAppConfig(seccion, "logFileName")}";
+
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
                         $"*{tipo}:  {ex.Message} {(char)13}" +
@@ -910,12 +925,19 @@ namespace Mensajes
                         $"*Source: {ex.Source}  {(char)13}" +
                         $"*Data: {ex.Data}  {(char)13}" +
                         $"*HelpLink: {ex.HelpLink}  {(char)13}" +
-                        $"*TargetSite: {ex.TargetSite}  {(char)13}";
+                        $"*TargetSite: {ex.TargetSite}";
                     Console.Write(vData);
                     outputFile.WriteLine(vData);
                 }
 
             }
         }
+        private class MensajeEnviar
+        {
+            public int NumMensaje { get; set; }
+            public string Msj { get; set; }
+        }
     }
+
+   
 }

@@ -65,17 +65,23 @@ namespace Mensajes
         public bool blnConectado;
 
 
-        // ******************************************************************************************
-        // Variables y objectos publicos para conectarse al MQSeries
+        //// ******************************************************************************************
+        //// Variables y objectos publicos para conectarse al MQSeries
 
-        // Declaraciones de los objetos para MQSeries
-        // Referencia: IBM MQSeries Automation Classes for ActiveX
-        //public mqSession mqSession = new mqSession();             // Objeto Session para conexión con el servidor MQSeries
-        public MQQueueManager mqManager;                            // -Objeto QueueManager para accesar al maestro de colas
-        public MQQueue mqsEscribir;                                 // -Objeto Queue para escribir
-        public MQQueue mqsLectura;                                  // -Objeto Queue para lectura
-        public MQMessage mqsMsgEscribir;                            // -Objeto Message para escribir
-        public MQMessage mqsMsglectura;
+        //// Declaraciones de los objetos para MQSeries
+        //// Referencia: IBM MQSeries Automation Classes for ActiveX
+        ////public mqSession mqSession = new mqSession();             // Objeto Session para conexión con el servidor MQSeries
+        //public MQQueueManager mqManager;                            // -Objeto QueueManager para accesar al maestro de colas
+        //public MQQueue mqsEscribir;                                 // -Objeto Queue para escribir
+        //public MQQueue mqsLectura;                                  // -Objeto Queue para lectura
+        //public MQMessage mqsMsgEscribir;                            // -Objeto Message para escribir
+        //public MQMessage mqsMsglectura;
+
+        public MQQueueManager queueManager;
+        public MQQueue queue;
+        public MQMessage queueMessage;
+        public MQPutMessageOptions queuePutMessageOptions;
+        public MQGetMessageOptions queueGetMessageOptions;
 
 
 
@@ -136,6 +142,7 @@ namespace Mensajes
             bool AbriColaMQ;
             try
             {
+                Escribe("Abriendo Cola", "Mensaje");
                 //QMGR = new MQQueueManager("usemq");
                 //QUEUE = QMGR.AccessQueue("SYSTEM.DEFAULT.LOCAL.QUEUE",
                 //    MQC.MQOO_INPUT_SHARED +
@@ -175,11 +182,7 @@ namespace Mensajes
             try
             {
                 Escribe($"Funcion EnviarMensajeMQ:{QMGR.Name}", "Mensaje");
-                //pmo = new MQPutMessageOptions();
-                //pmo.Options = MQC.MQPMO_SYNCPOINT;
-                //MSG = new MQMessage();
-                //QUEUE.Put(MSG, pmo);
-                //
+      
                 lngMqOpen = (long)MQOPEN.MQOO_OUTPUT;
 
                 if (AbrirColaMQ(objMQManager, strMQCola, objMQCola, (MQOPEN)lngMqOpen))
@@ -217,6 +220,7 @@ namespace Mensajes
             bool DesconectarMQ;
             try
             {
+                Escribe("Me voy a desconectar del MQ", "Mensaje");
                 QMGR.Disconnect();
                 Escribe("Desconectado satisfactoriamente : " + QMGR.Name, "Mensaje");
                 DesconectarMQ = true;
@@ -456,7 +460,10 @@ namespace Mensajes
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                string fecha = DateTime.Now.ToString("ddMMyyyy");
+                string nombre_archivo = $"{fecha}_{getValueAppConfig(seccion, "logFileName")}";
+
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}";
                     Console.WriteLine(vData);
@@ -477,7 +484,10 @@ namespace Mensajes
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                string fecha = DateTime.Now.ToString("ddMMyyyy");
+                string nombre_archivo = $"{fecha}_{getValueAppConfig(seccion, "logFileName")}";
+
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
                         $"*{tipo}:  {ex.Message} {(char)13}" +

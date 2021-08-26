@@ -7,4 +7,3 @@ C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\b
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.CopyComplete
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.dll
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.pdb
-C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Debug\Mensajes.csproj.AssemblyReference.cache
