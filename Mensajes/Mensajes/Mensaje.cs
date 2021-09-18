@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Mensajes
 {
@@ -75,6 +72,8 @@ namespace Mensajes
 
         MqSeries mQ;
 
+        Biblioteca biblioteca;
+
         public Mensaje()
         {
             //mqSeriesConfig = new MqSeriesConfig();
@@ -82,6 +81,7 @@ namespace Mensajes
             //conexionConfig = new ConexionConfig();
 
             mQ = new MqSeries();
+            biblioteca = new Biblioteca();
         }
 
         public void ProcesarMensajes(string strRutaIni, string strParametros = "")
@@ -176,12 +176,12 @@ namespace Mensajes
             string section = "conexion";
             try
             {
-                mQ.gsCataDB = getValueAppConfig(section, "DBCata");
-                mQ.gsDSNDB = getValueAppConfig(section, "DBDSN");
-                mQ.gsSrvr = getValueAppConfig(section, "DBSrvr");
-                mQ.gsUserDB = getValueAppConfig(section, "DBUser");
-                mQ.gsPswdDB = getValueAppConfig(section, "DBPswd");
-                mQ.gsNameDB = getValueAppConfig(section, "DBName");
+                mQ.gsCataDB = biblioteca.Decrypt(getValueAppConfig(section, "DBCata"));
+                mQ.gsDSNDB = biblioteca.Decrypt(getValueAppConfig(section, "DBDSN"));
+                mQ.gsSrvr = biblioteca.Decrypt(getValueAppConfig(section, "DBSrvr"));
+                mQ.gsUserDB = biblioteca.Decrypt(getValueAppConfig(section, "DBUser"));
+                mQ.gsPswdDB = biblioteca.Decrypt(getValueAppConfig(section, "DBPswd"));
+                mQ.gsNameDB = biblioteca.Decrypt(getValueAppConfig(section, "DBName"));
 
                 string conn_str = $"Data source ={mQ.gsSrvr}; uid ={mQ.gsUserDB}; PWD ={mQ.gsPswdDB}; initial catalog = {mQ.gsNameDB}";
                 mQ.cnnConexion = new ConexionBDSQL.ConexionBD(conn_str);

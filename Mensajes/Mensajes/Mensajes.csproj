@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Biblioteca.cs" />
     <Compile Include="Bitacora_Errores_Mensajes_Pu.cs" />
     <Compile Include="Mensaje.cs" />
     <Compile Include="MqSeries.cs" />

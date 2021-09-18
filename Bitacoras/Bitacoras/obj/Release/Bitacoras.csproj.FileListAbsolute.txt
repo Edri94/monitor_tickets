@@ -8,3 +8,4 @@ C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.csproj.CopyComplete
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.dll
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Bitacoras\Bitacoras\obj\Release\Bitacoras.csproj.AssemblyReference.cache

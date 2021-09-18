@@ -136,13 +136,6 @@ namespace Bitacoras
             bool AbriColaMQ;
             try
             {
-                //QMGR = new MQQueueManager("usemq");
-                //QUEUE = QMGR.AccessQueue("SYSTEM.DEFAULT.LOCAL.QUEUE",
-                //    MQC.MQOO_INPUT_SHARED +
-                //    MQC.MQOO_OUTPUT +
-                //    MQC.MQOO_BROWSE
-                //);
-
                 QUEUE = QMGR.AccessQueue(strMQCola,
                    (int)lngOpciones
                 );
@@ -175,11 +168,6 @@ namespace Bitacoras
             try
             {
                 Escribe($"Funcion EnviarMensajeMQ:{QMGR.Name}", "Mensaje");
-                //pmo = new MQPutMessageOptions();
-                //pmo.Options = MQC.MQPMO_SYNCPOINT;
-                //MSG = new MQMessage();
-                //QUEUE.Put(MSG, pmo);
-                //
                 lngMqOpen = (long)MQOPEN.MQOO_OUTPUT;
 
                 if (AbrirColaMQ(objMQManager, strMQCola, objMQCola, (MQOPEN)lngMqOpen))
@@ -243,7 +231,6 @@ namespace Bitacoras
             try
             {
                 queueManager = new MQQueueManager(strQueueManagerName);
-                //Set objMQManager = objMQConexion.AccessQueueManager(strMQManager)
                 MQConectar = "Connected Successfully : " + queueManager.Name;
 
                 Escribe(MQConectar, "Mensaje");
@@ -385,17 +372,13 @@ namespace Bitacoras
         /// escribe en el log
         /// </summary>
         /// <param name="vData"></param>
-        public void Escribe(string vData, string tipo)
+        public void Escribe(string vData, string tipo = "Mensaje")
         {
             string seccion = "escribeArchivoLOG";
-            //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
-            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            //string docPath = @"C:\tmp\log\";
-            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
-
+            string file_name = $"{DateTime.Now.ToString("ddMMyyyy")}_{getValueAppConfig(seccion, "LogFile")}.log";
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "LogPath"), file_name), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}";
                     Console.WriteLine(vData);
@@ -416,29 +399,33 @@ namespace Bitacoras
             return ConfigurationManager.AppSettings[$"{section}.{key}"]; ;
         }
 
+        private string getValueAppConfig(string key)
+        {
+            return ConfigurationManager.AppSettings[$"{key}"]; ;
+        }
+
         /// <summary>
         /// escribe en el log
         /// </summary>
         /// <param name="vData"></param>
-        public void Escribe(Exception ex, string tipo)
+        public void Escribe(Exception ex, string mensaje_personalizado)
         {
             string vData;
             string seccion = "escribeArchivoLOG";
-            //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
-            //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            //string docPath = @"C:\tmp\log\";
-            //string docPath = "D:\\Procesos\\TestMonitorMQTKTNet\\Procesos\\Log\\";
+            string file_name = $"{DateTime.Now.ToString("ddMMyyyy")}_{getValueAppConfig(seccion, "LogFile")}.log";
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "LogPath"), file_name), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
-                        $"*{tipo}:  {ex.Message} {(char)13}" +
+                        $"*Mensaje Personalizado:  {mensaje_personalizado} {(char)13}" +
+                        $"*Message:  {ex.Message} {(char)13}" +
                         $"*InnerException: {ex.InnerException} {(char)13}" +
                         $"*Source: {ex.Source}  {(char)13}" +
                         $"*Data: {ex.Data}  {(char)13}" +
                         $"*HelpLink: {ex.HelpLink}  {(char)13}" +
+                        $"*StackTrace: {ex.StackTrace}  {(char)13}" +
                         $"*TargetSite: {ex.TargetSite}  {(char)13}";
                     Console.Write(vData);
                     outputFile.WriteLine(vData);

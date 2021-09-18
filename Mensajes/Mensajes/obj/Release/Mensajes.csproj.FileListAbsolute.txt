@@ -7,3 +7,4 @@ C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\o
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Release\Mensajes.csproj.CopyComplete
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Release\Mensajes.dll
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Release\Mensajes.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\Mensajes\Mensajes\obj\Release\Mensajes.csproj.AssemblyReference.cache
