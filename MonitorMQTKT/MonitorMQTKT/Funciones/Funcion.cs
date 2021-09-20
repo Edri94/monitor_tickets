@@ -71,9 +71,17 @@ namespace MonitorMQTKT.Funciones
         /// <param name="section">Seccion donde buscara</param>
         /// <param name="value">Valor que buscas</param>
         /// <returns></returns>
-        public string getValueAppConfig(string section, string key)
+        public string getValueAppConfig(string section, string key = "")
         {
-            return ConfigurationManager.AppSettings[$"{section}.{key}"]; ;
+            if(key.Length >= 1)
+            {
+                return ConfigurationManager.AppSettings[$"{section}.{key}"];
+            }
+            else
+            {
+                return ConfigurationManager.AppSettings[$"{key}"];
+            }
+            
         }
 
         /// <summary>
@@ -98,6 +106,50 @@ namespace MonitorMQTKT.Funciones
                 Escribe(error);
                 return null;
             }
+        }
+
+
+        /// <summary>
+        /// Escribe en el App.config en la seccion y key dada en parametros
+        /// </summary>
+        /// <param name="section">seccion en appsettings</param>
+        /// <param name="key">key en appsetitngs</param>
+        /// <param name="value">valor nuevo</param>
+        public void SetParameterAppSettings(string key, string value, string section = "")
+        {
+            try
+            {
+                string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                string[] appPath_arr = appPath.Split('\\');
+
+                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
+                appPath = "";
+                for (int i = 0; i < (appPath_arr.Length - 1); i++)
+                {
+                    appPath = appPath + "\\" + appPath_arr[i];
+                }
+                appPath = appPath.Substring(1, appPath.Length - 1);
+                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
+                string configFile = System.IO.Path.Combine(appPath, "App.config");
+                Escribe("Variable entrada [configFile]: " + configFile, "Mensaje");
+                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                configFileMap.ExeConfigFilename = configFile;
+                System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+                if (section.Length > 0)
+                {
+                    config.AppSettings.Settings[$"{section}.{key}"].Value = value;
+                }
+                else
+                {
+                    config.AppSettings.Settings[$"{key}"].Value = value;
+                }
+                config.Save();
+            }
+            catch (Exception ex)
+            {
+                Escribe(ex, "Error");
+            }
+
         }
     }
 }

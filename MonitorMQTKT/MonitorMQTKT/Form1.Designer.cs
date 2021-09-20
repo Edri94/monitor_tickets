@@ -29,8 +29,11 @@ namespace MonitorMQTKT
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.grpErrores = new System.Windows.Forms.GroupBox();
             this.txtErrores = new System.Windows.Forms.TextBox();
+            this.tmrRestar = new System.Windows.Forms.Timer(this.components);
+            this.tmrMonitorMQTKT = new System.Windows.Forms.Timer(this.components);
             this.grpErrores.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +55,14 @@ namespace MonitorMQTKT
             this.txtErrores.Size = new System.Drawing.Size(969, 163);
             this.txtErrores.TabIndex = 0;
             // 
+            // tmrRestar
+            // 
+            this.tmrRestar.Tick += new System.EventHandler(this.tmrRestar_Tick);
+            // 
+            // tmrMonitorMQTKT
+            // 
+            this.tmrMonitorMQTKT.Tick += new System.EventHandler(this.tmrMonitorMQTKT_Tick);
+            // 
             // FrmMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -60,6 +71,8 @@ namespace MonitorMQTKT
             this.Controls.Add(this.grpErrores);
             this.Name = "FrmMonitor";
             this.Text = "FrmMonitor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmMonitor_FormClosing);
+            this.Load += new System.EventHandler(this.FrmMonitor_Load);
             this.grpErrores.ResumeLayout(false);
             this.grpErrores.PerformLayout();
             this.ResumeLayout(false);
@@ -70,6 +83,8 @@ namespace MonitorMQTKT
 
         private System.Windows.Forms.GroupBox grpErrores;
         private System.Windows.Forms.TextBox txtErrores;
+        private System.Windows.Forms.Timer tmrRestar;
+        private System.Windows.Forms.Timer tmrMonitorMQTKT;
     }
 }
 
