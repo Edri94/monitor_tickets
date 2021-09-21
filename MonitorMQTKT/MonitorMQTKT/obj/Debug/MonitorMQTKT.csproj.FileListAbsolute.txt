@@ -9,3 +9,4 @@ C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\Monito
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.CopyComplete
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.exe
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.AssemblyReference.cache

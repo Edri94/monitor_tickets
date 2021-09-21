@@ -3,6 +3,7 @@ using MonitorMQTKT.Funciones;
 using System;
 using IBM.WMQ;
 using System.Collections.Generic;
+using MonitorMQTKT.Processes;
 
 namespace MonitorMQTKT
 {
@@ -292,24 +293,85 @@ namespace MonitorMQTKT
                 sValor = funcion.getValueAppConfig("PARAMETRO" + intlBitacoras);
                 vntBitacora = sValor.Split(',');
 
-                if(Int32.Parse(vntBitacora[0]) == 1)
+                if (Int32.Parse(vntBitacora[0]) == 1)
                 {
                     Parametro.AddRange(funcion.getValueAppConfig(vntBitacora[1]).Split(','));
                     Ejecutable = Parametro[0];
 
-                    if(Ejecutable == "M")
+                    if (Ejecutable == "M")
                     {
                         //Dim MensajesMQ As Object
                         //Set MensajesMQ = CreateObject("MensajesMQ.cMensajes")
-
                         Mensaje mensajes_MQ = new Mensaje();
+
+                        //MensajesMQ.ProcesarMensajes App.Path, strMQManager & "-" & strMQQMonitorEscritura & "-" & "1" & "-" & Parametro(1)
+                        mensajes_MQ.ProcesarMensajes("D:\\TEMPORAL\\", "QMDCEDTK-QRT.CEDTK.ENVIO.MQD8-F-INAUTPU");
+                        mensajes_MQ.ProcesarMensajes("D:\\TEMPORAL\\", monitorTicket.strMQManager + "-" + monitorTicket.strMQQMonitorEscritura + "-1-" + Parametro[1]);
+
                     }
                     else
                     {
                         //Dim MensajesMQ As Object
                         //Set MensajesMQ = CreateObject("MensajesMQ.cMensajes")
+
+                        Bitacora bitacoras_MQ = new Bitacora();
+
+                        //Bitacoras.ProcesarBitacora App.Path, strMQManager & "-" & strMQQMonitorEscritura & "-" & "1" & "-" & Parametro(1)
+                        bitacoras_MQ.ProcesarBitacora("D:\\TEMPORAL\\", monitorTicket.strMQManager + "-" + monitorTicket.strMQQMonitorEscritura + "-1-" + Parametro[1]);
+
                     }
                 }
+                else
+                {
+                    funcion.Escribe("La operación: " + vntBitacora[1] + " no esta habilitada para este día " + funcion.ObtenFechaFormato(1));
+                }
+            }
+        }
+
+        private bool fValidaEjecucion(string psBitacora)
+        {
+            string iTotalProcesos;
+            int iRow;
+            string sValor;
+            string[] sParametros;
+            int intCuenta;
+            bool fValidaEjecucion = false;
+            try
+            {
+                iTotalProcesos = funcion.getValueAppConfig("PROCESOS");
+
+                for (iRow = 1; iRow <= Int32.Parse(iTotalProcesos); iRow++)
+                {
+                    sValor = funcion.getValueAppConfig("PROCESO" + iRow);
+                    sParametros = sValor.Split(',');
+                    
+                    for (intCuenta = 1;  intCuenta < Int32.Parse(sParametros[9]); intCuenta++)
+                    {
+                        if(Int32.Parse(sParametros[0]) == 1 && sParametros[1] == psBitacora)
+                        {
+                            if(sParametros[intCuenta + 2] == "Si")
+                            {
+                                if((int)DateTime.Now.DayOfWeek == intCuenta + 1)
+                                {
+                                    fValidaEjecucion = true;
+                                    intCuenta = Int32.Parse(sParametros[9]);
+                                    iRow = Int32.Parse(iTotalProcesos);                                  
+                                }
+                            }
+                        }
+                        else
+                        {
+                            fValidaEjecucion = false;
+                            intCuenta = Int32.Parse(sParametros[9]);
+                        }
+                    }
+                }
+                return fValidaEjecucion;
+            }
+            catch(Exception ex)
+            {
+                funcion.Escribe(ex);
+                return fValidaEjecucion;
             }
         }
 
