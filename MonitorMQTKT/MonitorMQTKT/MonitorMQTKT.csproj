@@ -51,15 +51,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ConexionBD.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Funciones\Funcion.cs" />
-    <Compile Include="Funciones\MqMonitorTicket.cs" />
-    <Compile Include="Funciones\MqSeries.cs" />
+    <Compile Include="Helpers\Encriptacion.cs" />
+    <Compile Include="Helpers\Funcion.cs" />
+    <Compile Include="Models\Bitacora_Errores_Mensajes_Pu.cs" />
+    <Compile Include="Models\MensajeEnviar.cs" />
+    <Compile Include="Mq\BitacorasMq.cs" />
+    <Compile Include="Processes\Bitacora.cs" />
+    <Compile Include="Processes\Mensaje.cs" />
+    <Compile Include="Mq\MensajesMq.cs" />
+    <Compile Include="Mq\MqMonitorTicket.cs" />
+    <Compile Include="Mq\MqSeries.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -87,5 +95,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

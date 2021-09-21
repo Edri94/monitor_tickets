@@ -301,6 +301,8 @@ namespace MonitorMQTKT
                     {
                         //Dim MensajesMQ As Object
                         //Set MensajesMQ = CreateObject("MensajesMQ.cMensajes")
+
+                        Mensaje mensajes_MQ = new Mensaje();
                     }
                     else
                     {

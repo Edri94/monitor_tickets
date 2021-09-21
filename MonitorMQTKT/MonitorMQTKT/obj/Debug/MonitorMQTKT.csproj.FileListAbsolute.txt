@@ -1,5 +1,11 @@
-C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.AssemblyReference.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Debug\MonitorMQTKT.exe.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Debug\MonitorMQTKT.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Debug\MonitorMQTKT.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Debug\amqmdnet.dll
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.FrmMonitor.resources
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.Properties.Resources.resources
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.GenerateResource.cache
 C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Debug\MonitorMQTKT.pdb

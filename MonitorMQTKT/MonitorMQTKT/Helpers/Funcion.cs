@@ -151,5 +151,49 @@ namespace MonitorMQTKT.Funciones
             }
 
         }
+
+        /// <summary>
+        /// Devuelve cadena igual a el numero de espacios dados en el parametro
+        /// </summary>
+        /// <param name="veces">numero de espacios</param>
+        /// <returns></returns>
+        public string Space(int veces)
+        {
+            return new String(' ', veces);
+        }
+
+
+        /// <summary>
+        /// Devuelve una variante ( cadena ) que contiene un número especificado de caracteres del lado izquierdo de una cadena.
+        /// </summary>
+        /// <param name="cadena">Cadena</param>
+        /// <param name="posiciones">Posiciones a tomar</param>
+        /// <returns></returns>
+        public string Left(string cadena, int posiciones)
+        {
+            return cadena.Substring(0, posiciones);
+        }
+
+        /// <summary>
+        /// Devuelve una cadena que contiene un número de caracteres especificado a partir de una posición especificada de una cadena.
+        /// </summary>
+        /// <param name="cadena"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        public string Mid(string cadena, int start, int length)
+        {
+            return cadena.Substring(start, length);
+        }
+        /// <summary>
+        /// Devuelve una variante ( cadena ) que contiene un número específico de caracteres del lado derecho de una cadena.
+        /// </summary>
+        /// <param name="cadena">Cadena</param>
+        /// <param name="posiciones">Posiciones a tomar</param>
+        /// <returns></returns>
+        public string Right(string cadena, int posiciones)
+        {
+            return cadena.Substring((cadena.Length - posiciones), posiciones);
+        }
     }
 }
