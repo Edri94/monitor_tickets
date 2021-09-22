@@ -210,34 +210,6 @@ namespace MonitorMQTKT
                 funcion.Escribe(ex);
             }
         }
-
-        private void tmrRestar_Tick(object sender, EventArgs e)
-        {
-            tmrRestar.Enabled = false;
-
-            funcion.Escribe("****************************************************");
-            funcion.Escribe("****************************************************");
-            funcion.Escribe("Ejecución del Timer tmrRestar : " + monitorTicket.currentDate.ToString());
-            funcion.Escribe("valor de Modfunciones.date: " + monitorTicket.date.ToString());
-            funcion.Escribe("valor de ModFunciones.FechaRestar: " + monitorTicket.FechaRestar.ToString());
-            funcion.Escribe("valor de Convert.ToDateTime(ModFunciones.FechaRestar: " + Convert.ToDateTime(monitorTicket.FechaRestar.ToString()));
-            funcion.Escribe("****************************************************");
-            funcion.Escribe("****************************************************");
-            if (monitorTicket.date > Convert.ToDateTime(monitorTicket.FechaRestar))
-            {
-                ResetMonitor();
-
-                monitorTicket.FechaRestar = monitorTicket.date.ToString();
-
-                funcion.SetParameterAppSettings("RestarMonitor", monitorTicket.FechaRestar);
-
-                funcion.Escribe("Aplicación Monitor iniciado : " + monitorTicket.currentDate, "Mensaje");
-                funcion.Escribe("Monitor iniciado en modo de procesamiento: " + monitorTicket.currentDate, "Mensaje");
-            }
-
-            tmrRestar.Enabled = true;
-        }
-
         private void tmrMonitorMQTKT_Tick(object sender, EventArgs e)
         {
             monitorTicket.dblCiclosBitacoras += 10;
@@ -276,6 +248,98 @@ namespace MonitorMQTKT
                 }
             }
         }
+
+        private void tmrRestar_Tick(object sender, EventArgs e)
+        {
+            tmrRestar.Enabled = false;
+
+            funcion.Escribe("****************************************************");
+            funcion.Escribe("****************************************************");
+            funcion.Escribe("Ejecución del Timer tmrRestar : " + monitorTicket.currentDate.ToString());
+            funcion.Escribe("valor de Modfunciones.date: " + monitorTicket.date.ToString());
+            funcion.Escribe("valor de ModFunciones.FechaRestar: " + monitorTicket.FechaRestar.ToString());
+            funcion.Escribe("valor de Convert.ToDateTime(ModFunciones.FechaRestar: " + Convert.ToDateTime(monitorTicket.FechaRestar.ToString()));
+            funcion.Escribe("****************************************************");
+            funcion.Escribe("****************************************************");
+            if (monitorTicket.date > Convert.ToDateTime(monitorTicket.FechaRestar))
+            {
+                ResetMonitor();
+
+                monitorTicket.FechaRestar = monitorTicket.date.ToString();
+
+                funcion.SetParameterAppSettings("RestarMonitor", monitorTicket.FechaRestar);
+
+                funcion.Escribe("Aplicación Monitor iniciado : " + monitorTicket.currentDate, "Mensaje");
+                funcion.Escribe("Monitor iniciado en modo de procesamiento: " + monitorTicket.currentDate, "Mensaje");
+            }
+
+            tmrRestar.Enabled = true;
+        }
+
+        //private void TmrTKTMQ()
+        //{
+        //    double ln_MsgEncontrado;
+        //    ln_MsgEncontrado = RevisaMQ(MQQMonitorLectura, strMQManager, strMQQMonitorLectura, strMQQMonitorEscritura, "0", ActivoProcFuncAuto);
+        //}
+
+
+        //private double RevisaMQ(MQQueue MQParaLectura, string MQManager, string MQQLectura, string MQQEscritura, string psOtros, bool StatusProceso)
+        //{
+        //    long lngErr;
+        //    int j;
+        //    long lngMQOpen;
+        //    string lsExeParam;
+        //    double RevisaMQ;
+
+        //    try
+        //    {
+        //        lngMQOpen = (long)MqMonitorTicket.MQOPEN.MQOO_INQUIRE;
+
+
+        //        if (monitorTicket.AbrirColaMQ(monitorTicket.QMGR, "", monitorTicket.QUEUE, MqMonitorTicket.MQOPEN.MQOO_INQUIRE))
+        //        {
+        //            j = 1;
+        //            lngErr = monitorTicket.QUEUE.ReasonCode;
+
+        //            MensajesMQ = monitorTicket.QUEUE.CurrentDepth;
+
+        //            if (MensajesMQ < 0)
+        //            {
+        //                RevisaMQ = 0;
+        //                return RevisaMQ;
+        //            }
+
+        //            monitorTicket.CerrarColaMQ();
+
+
+        //            if (!ModoMonitor)
+        //            {
+        //                if(MensajesMQ > 0)
+        //                {
+        //                    do
+        //                    {
+        //                        if(psOtros.CompareTo("") != 0)
+        //                        {
+        //                            lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-" + psOtros; 
+        //                        }
+        //                        else
+        //                        {
+        //                            lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-0";
+        //                        }
+
+        //                        //Aqui va el codigo de tktMq
+
+        //                    } while (j <= MensajesMQ);
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        throw;
+        //    }
+        //}
 
         private void TmrBitacora()
         {
@@ -372,6 +436,37 @@ namespace MonitorMQTKT
             {
                 funcion.Escribe(ex);
                 return fValidaEjecucion;
+            }
+        }
+
+
+        private void ReConectar()
+        {
+            try
+            {
+                if(monitorTicket.QUEUE != null)
+                {
+                    if(monitorTicket.QUEUE.IsOpen)
+                    {
+                        monitorTicket.CerrarColaMQ();
+                    }
+
+                    monitorTicket.DesconectarMQ();
+
+                    if(monitorTicket.ConectarMQ(monitorTicket.strMQManager))
+                    {
+                        monitorTicket.blnConectado = true;
+                    }
+                    else
+                    {
+                        funcion.Escribe("Falla en Monitor < Error al reconectarse con la MQ > : " + funcion.ObtenFechaFormato(1));
+                        funcion.Escribe("Detalles : " + monitorTicket.QUEUE.ReasonCode + " " + monitorTicket.QUEUE.ReasonName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                funcion.Escribe(ex);
             }
         }
 
