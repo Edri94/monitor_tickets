@@ -262,7 +262,7 @@ namespace MonitorMQTKT
             {
                 if(monitorTicket.dblCiclosTKTMQ >= (monitorTicket.intTiempoTKTMQ * 60))
                 {
-                    //tmrTKTMQ
+                    TmrTKTMQ();
                     monitorTicket.dblCiclosTKTMQ = 0;
                 }
             }
@@ -270,7 +270,7 @@ namespace MonitorMQTKT
             {
                 if(monitorTicket.dblCiclosTKTMQ >= monitorTicket.intTiempoTKTMQ)
                 {
-                    //tmrTKTMQ
+                    TmrTKTMQ();
                     monitorTicket.dblCiclosTKTMQ = 0;
                 }
             }
@@ -279,14 +279,16 @@ namespace MonitorMQTKT
             {
                 if(monitorTicket.dblCiclosFuncionarios >= (monitorTicket.intTiempoFuncionarios * 60))
                 {
-                    
+                    ActivarEnvioFuncAuto("F");
+                    monitorTicket.dblCiclosFuncionarios = 0;
                 }
             }
             else
             {
                 if (monitorTicket.dblCiclosFuncionarios >= monitorTicket.intTiempoFuncionarios)
                 {
-
+                    ActivarEnvioFuncAuto("F");
+                    monitorTicket.dblCiclosFuncionarios = 0;
                 }
             }
 
@@ -294,43 +296,17 @@ namespace MonitorMQTKT
             {
                 if(monitorTicket.dblCiclosAutorizaciones >= (monitorTicket.intTiempoAutorizaciones * 60))
                 {
-
+                    ActivarEnvioFuncAuto("A");
+                    monitorTicket.dblCiclosAutorizaciones = 0;
                 }
             }
             else
             {
                 if(monitorTicket.dblCiclosAutorizaciones >= monitorTicket.intTiempoAutorizaciones)
                 {
-
+                    ActivarEnvioFuncAuto("A");
+                    monitorTicket.dblCiclosAutorizaciones = 0;
                 }
-            }
-        }
-
-        private void ActivarEnvioFuncAuto(string psMonitor)
-        {
-            MensajesMq mensajesMQ = new MensajesMq();
-
-            double Ld_CodigoExecNTHOST;
-            string EjecutableMSG;
-            string LsProceso = "";
-            string sMensaje;
-
-            switch (psMonitor)
-            {
-                case "A":
-                    LsProceso = "PROCESOS2";
-                    break;
-                case "F":
-                    LsProceso = "PROCESOS1";
-                    break;
-                default:
-                    break;
-            }
-
-
-            if(ActivoProcFuncAuto)
-            {
-                sMensaje = funcion.Mid(funcion.getValueAppConfig(LsProceso), 3, funcion.getValueAppConfig(LsProceso).IndexOf(',', 3) -3);
             }
         }
 
@@ -361,70 +337,124 @@ namespace MonitorMQTKT
             tmrRestar.Enabled = true;
         }
 
-        //private void TmrTKTMQ()
-        //{
-        //    double ln_MsgEncontrado;
-        //    ln_MsgEncontrado = RevisaMQ(MQQMonitorLectura, strMQManager, strMQQMonitorLectura, strMQQMonitorEscritura, "0", ActivoProcFuncAuto);
-        //}
+
+        private void TmrTKTMQ()
+        {
+            double ln_MsgEncontrado;
+            ln_MsgEncontrado = RevisaMQ(monitorTicket.QUEUE, monitorTicket.strMQManager, monitorTicket.strMQQMonitorLectura, monitorTicket.strMQQMonitorEscritura, "0", ActivoProcFuncAuto);
+        }
+
+        private void ActivarEnvioFuncAuto(string psMonitor)
+        {
+            Mensaje mensaje; ;
+
+            double Ld_CodigoExecNTHOST;
+            string EjecutableMSG;
+            string LsProceso = "";
+            string sMensaje;
+
+            switch (psMonitor)
+            {
+                case "A":
+                    LsProceso = "PROCESOS2";
+                    break;
+                case "F":
+                    LsProceso = "PROCESOS1";
+                    break;
+                default:
+                    break;
+            }
 
 
-        //private double RevisaMQ(MQQueue MQParaLectura, string MQManager, string MQQLectura, string MQQEscritura, string psOtros, bool StatusProceso)
-        //{
-        //    long lngErr;
-        //    int j;
-        //    long lngMQOpen;
-        //    string lsExeParam;
-        //    double RevisaMQ;
+            if(ActivoProcFuncAuto)
+            {
+                sMensaje = funcion.Mid(funcion.getValueAppConfig(LsProceso), 3, funcion.getValueAppConfig(LsProceso).IndexOf(',', 3) -3);
 
-        //    try
-        //    {
-        //        lngMQOpen = (long)MqMonitorTicket.MQOPEN.MQOO_INQUIRE;
-
-
-        //        if (monitorTicket.AbrirColaMQ(monitorTicket.QMGR, "", monitorTicket.QUEUE, MqMonitorTicket.MQOPEN.MQOO_INQUIRE))
-        //        {
-        //            j = 1;
-        //            lngErr = monitorTicket.QUEUE.ReasonCode;
-
-        //            MensajesMQ = monitorTicket.QUEUE.CurrentDepth;
-
-        //            if (MensajesMQ < 0)
-        //            {
-        //                RevisaMQ = 0;
-        //                return RevisaMQ;
-        //            }
-
-        //            monitorTicket.CerrarColaMQ();
+                if(fValidaEjecucion(sMensaje))
+                {
+                    mensaje = new Mensaje();
+                    mensaje.ProcesarMensajes("D:\\TEMPORAL\\", monitorTicket.strMQManager + "-" + monitorTicket.strMQQMonitorEscritura + "-" + psMonitor);
+                    mensaje = null;
+                }
+                else
+                {
+                    funcion.Escribe("La operación: " + sMensaje + " no esta habilitada para este día " + funcion.ObtenFechaFormato(1));
+                }
+            }
+        }
 
 
-        //            if (!ModoMonitor)
-        //            {
-        //                if(MensajesMQ > 0)
-        //                {
-        //                    do
-        //                    {
-        //                        if(psOtros.CompareTo("") != 0)
-        //                        {
-        //                            lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-" + psOtros; 
-        //                        }
-        //                        else
-        //                        {
-        //                            lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-0";
-        //                        }
+        private double RevisaMQ(MQQueue MQParaLectura, string MQManager, string MQQLectura, string MQQEscritura, string psOtros, bool StatusProceso)
+        {
+            long lngErr;
+            int j;
+            long lngMQOpen;
+            string lsExeParam;
+            double RevisaMQ;
 
-        //                        //Aqui va el codigo de tktMq
+            try
+            {
+                lngMQOpen = (long)MqMonitorTicket.MQOPEN.MQOO_INQUIRE;
 
-        //                    } while (j <= MensajesMQ);
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
 
-        //        throw;
-        //    }
-        //}
+                if (monitorTicket.AbrirColaMQ(monitorTicket.QMGR, "", monitorTicket.QUEUE, MqMonitorTicket.MQOPEN.MQOO_INQUIRE))
+                {
+                    j = 1;
+                    lngErr = monitorTicket.QUEUE.ReasonCode;
+
+                    MensajesMQ = monitorTicket.QUEUE.CurrentDepth;
+
+                    if (MensajesMQ < 0)
+                    {
+                        RevisaMQ = 0;
+                        return RevisaMQ;
+                    }
+
+                    monitorTicket.CerrarColaMQ();
+
+
+                    if (!ModoMonitor)
+                    {
+                        if (MensajesMQ > 0)
+                        {
+                            do
+                            {
+                                if (psOtros.CompareTo("") != 0)
+                                {
+                                    lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-" + psOtros;
+                                }
+                                else
+                                {
+                                    lsExeParam = MQManager + "-" + MQQLectura + "-" + MQQEscritura + "-0";
+                                }
+
+                                //Aqui va el codigo de tktMq
+
+                                j++;
+
+                            } while (j <= MensajesMQ);
+                        }
+                    }
+                }
+                else
+                {
+                    funcion.Escribe("Error en la conexion con el MQ Manager : " + monitorTicket.QMGR.ReasonCode + " " + monitorTicket.QMGR.ReasonName);
+                    funcion.Escribe("Ejecutamos el reinicio del monitor por problemas en la comunicacion con MQManager " + monitorTicket.strMQManager);
+                    ReConectar();
+                }
+
+                RevisaMQ = MensajesMQ;
+
+                return RevisaMQ;
+            }
+            catch (Exception ex)
+            {
+                funcion.Escribe(ex);
+                funcion.Escribe("Monitor error al ejecutar el proceso de TKTMQ el " + funcion.ObtenFechaFormato(1));
+                RevisaMQ = -1;
+                return RevisaMQ;
+            }
+        }
 
         private void TmrBitacora()
         {
