@@ -4,6 +4,7 @@ using System;
 using IBM.WMQ;
 using System.Collections.Generic;
 using MonitorMQTKT.Processes;
+using MonitorMQTKT.Mq;
 
 namespace MonitorMQTKT
 {
@@ -98,18 +99,25 @@ namespace MonitorMQTKT
         private void FrmMonitor_Load(object sender, EventArgs e)
         {
             //strArchivoIni = App.Path & "\MonitorMQTKT.ini"
-            
-            if(monitorTicket.Inicia())
+
+            if (monitorTicket.Inicia())
             {
                 bCambioManual = false;
+
+
+                ModoMonitor = (monitorTicket.intgModoMonitor == 1) ? true : false;
+                ActivoProcFuncAuto = (monitorTicket.intgActv_FuncAuto == 1) ? true : false;
+
+                funcion.Escribe("Aplicación Monitor iniciado : " + funcion.ObtenFechaFormato(1));
+
+                CargaInfMonitoreo();
+
+                Iniciar();
             }
-
-            ModoMonitor = (monitorTicket.intgModoMonitor == 1) ? true : false;
-            ActivoProcFuncAuto = (monitorTicket.intgActv_FuncAuto == 1) ? true : false;
-
-            funcion.Escribe("Aplicación Monitor iniciado : " + funcion.ObtenFechaFormato(1));
-
-            CargaInfMonitoreo();
+            else
+            {
+                funcion.Escribe("No se puede continuar con la carga. Archivo Ini no existe.");
+            }
 
         }
 
@@ -217,12 +225,13 @@ namespace MonitorMQTKT
             monitorTicket.dblCiclosFuncionarios += 10;
             monitorTicket.dblCiclosAutorizaciones += 10;
 
+            //Borrar despues****************************************************************************
             funcion.Escribe("Ejecución del Timer tmrMonitorMQTKT_Tick : " + monitorTicket.currentDate);
-
             funcion.Escribe("Valor de intgMonitor : " + monitorTicket.intgMonitor);
             funcion.Escribe("Valor de strFormatoTiempoBitacoras : " + monitorTicket.strFormatoTiempoBitacoras);
             funcion.Escribe("valor de dblCiclosBitacoras : " + monitorTicket.dblCiclosBitacoras);
             funcion.Escribe("Valor de intTiempoBitacoras : " + monitorTicket.intTiempoBitacoras);
+            //****************************************************************************Borrar despues
 
             if (monitorTicket.intgMonitor == 1)
             {
@@ -246,6 +255,82 @@ namespace MonitorMQTKT
                         monitorTicket.dblCiclosBitacoras = 0;
                     }
                 }
+            }
+
+
+            if(monitorTicket.strFormatoTiempoTKTMQ != "S")
+            {
+                if(monitorTicket.dblCiclosTKTMQ >= (monitorTicket.intTiempoTKTMQ * 60))
+                {
+                    //tmrTKTMQ
+                    monitorTicket.dblCiclosTKTMQ = 0;
+                }
+            }
+            else
+            {
+                if(monitorTicket.dblCiclosTKTMQ >= monitorTicket.intTiempoTKTMQ)
+                {
+                    //tmrTKTMQ
+                    monitorTicket.dblCiclosTKTMQ = 0;
+                }
+            }
+
+            if(monitorTicket.strFormatoTiempoFuncionarios != "S")
+            {
+                if(monitorTicket.dblCiclosFuncionarios >= (monitorTicket.intTiempoFuncionarios * 60))
+                {
+                    
+                }
+            }
+            else
+            {
+                if (monitorTicket.dblCiclosFuncionarios >= monitorTicket.intTiempoFuncionarios)
+                {
+
+                }
+            }
+
+            if(monitorTicket.strFormatoTiempoAutorizaciones != "S")
+            {
+                if(monitorTicket.dblCiclosAutorizaciones >= (monitorTicket.intTiempoAutorizaciones * 60))
+                {
+
+                }
+            }
+            else
+            {
+                if(monitorTicket.dblCiclosAutorizaciones >= monitorTicket.intTiempoAutorizaciones)
+                {
+
+                }
+            }
+        }
+
+        private void ActivarEnvioFuncAuto(string psMonitor)
+        {
+            MensajesMq mensajesMQ = new MensajesMq();
+
+            double Ld_CodigoExecNTHOST;
+            string EjecutableMSG;
+            string LsProceso = "";
+            string sMensaje;
+
+            switch (psMonitor)
+            {
+                case "A":
+                    LsProceso = "PROCESOS2";
+                    break;
+                case "F":
+                    LsProceso = "PROCESOS1";
+                    break;
+                default:
+                    break;
+            }
+
+
+            if(ActivoProcFuncAuto)
+            {
+                sMensaje = funcion.Mid(funcion.getValueAppConfig(LsProceso), 3, funcion.getValueAppConfig(LsProceso).IndexOf(',', 3) -3);
             }
         }
 
