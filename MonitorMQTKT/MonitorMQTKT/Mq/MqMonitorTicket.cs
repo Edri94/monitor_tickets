@@ -119,9 +119,9 @@ namespace MonitorMQTKT.Funciones
             strMQQMonitorEscritura = funcion.getValueAppConfig("MQEnvioMsgMonitor", "");
             strMQQMonitorLectura = funcion.getValueAppConfig("MQRecepResMonitor", "");
 
-            intgModoMonitor = Convert.ToInt32(funcion.getValueAppConfig("intModoMonitor", "0"));
-            intgActv_FuncAuto = Convert.ToInt32(funcion.getValueAppConfig("intgActv_FuncAuto", "0"));
-            intgMonitor = Convert.ToInt32(funcion.getValueAppConfig("intMonitor", "0"));
+            intgModoMonitor = Convert.ToInt32(funcion.getValueAppConfig("intModoMonitor", ""));
+            intgActv_FuncAuto = Convert.ToInt32(funcion.getValueAppConfig("intgActv_FuncAuto", ""));
+            intgMonitor = Convert.ToInt32(funcion.getValueAppConfig("intMonitor", ""));
 
             inttmrRestar = funcion.getValueAppConfig("inttmrRestar", "");
             inttmrMonitor = funcion.getValueAppConfig("inttmrMonitor", "");
@@ -180,9 +180,9 @@ namespace MonitorMQTKT.Funciones
             strMQQMonitorEscritura = funcion.getValueAppConfig("MQEnvioMsgMonitor", "");
             strMQQMonitorLectura = funcion.getValueAppConfig("MQRecepResMonitor", "");
 
-            intgModoMonitor = Convert.ToInt32(funcion.getValueAppConfig("intModoMonitor", "0"));
-            intgActv_FuncAuto = Convert.ToInt32(funcion.getValueAppConfig("intgActv_FuncAuto", "0"));
-            intgMonitor = Convert.ToInt32(funcion.getValueAppConfig("intMonitor", "0"));
+            intgModoMonitor = Convert.ToInt32(funcion.getValueAppConfig("intModoMonitor", ""));
+            intgActv_FuncAuto = Convert.ToInt32(funcion.getValueAppConfig("intgActv_FuncAuto", ""));
+            intgMonitor = Convert.ToInt32(funcion.getValueAppConfig("intMonitor", ""));
 
             intgtmrRestar = Convert.ToInt32(inttmrRestar);
             intgtmrMonitor = Convert.ToInt32(inttmrMonitor);
@@ -192,25 +192,25 @@ namespace MonitorMQTKT.Funciones
 
             string[] vs = TiempoBitacoras.Split(',');
             string[] Temporal = vs;
-            string strFormatoTiempoBitacoras = Temporal[0];
+            strFormatoTiempoBitacoras = Temporal[0];
             intTiempoBitacoras = Convert.ToInt32(Temporal[1]);
 
             TiempoMensajes = funcion.getValueAppConfig("TiempoMensajes", "");
             vs = TiempoMensajes.Split(',');
             Temporal = vs;
-            string strFormatoTiempoTKTMQ = Temporal[0];
+            strFormatoTiempoTKTMQ = Temporal[0];
             intTiempoTKTMQ = Convert.ToInt32(Temporal[1]);
 
             Tiempofuncionarios = funcion.getValueAppConfig("Tiempofuncionarios", "");
             vs = Tiempofuncionarios.Split(',');
             Temporal = vs;
-            string strFormatoTiempoFuncionarios = Temporal[0];
+            strFormatoTiempoFuncionarios = Temporal[0];
             intTiempoFuncionarios = Convert.ToInt32(Temporal[1]);
 
             TiempoAutorizacion = funcion.getValueAppConfig("TiempoAutorizacion", "");
             vs = TiempoAutorizacion.Split(',');
             Temporal = vs;
-            string strFormatoTiempoAutorizaciones = Temporal[0];
+            strFormatoTiempoAutorizaciones = Temporal[0];
             intTiempoAutorizaciones = Convert.ToInt32(Temporal[1]);
 
             FechaRestar = RestarMonitor;

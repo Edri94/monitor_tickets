@@ -96,9 +96,16 @@ namespace MonitorMQTKT.Funciones
             bool DesconectarMQ;
             try
             {
-                QMGR.Disconnect();
-                funcion.Escribe("Desconectado satisfactoriamente : " + QMGR.Name);
-                DesconectarMQ = true;
+                if (blnConectado)
+                {
+                    QMGR.Disconnect();
+                    funcion.Escribe("Desconectado satisfactoriamente : " + QMGR.Name);
+                    DesconectarMQ = true;
+                }
+                else
+                {
+                    DesconectarMQ = false;
+                }
             }
             catch (MQException mq_ex)
             {
@@ -121,35 +128,33 @@ namespace MonitorMQTKT.Funciones
         /// <returns></returns>
         public bool ConectarMQ(string strQueueManagerName)
         {
-            bool ConectarMQ;
+            funcion.Escribe("Conectando a : " + strQueueManagerName);
             try
             {
-                //QMGR = new MQQueueManager("usemq");
                 QMGR = new MQQueueManager(strQueueManagerName);
                 funcion.Escribe("Conectado satisfactoriamente : " + QMGR.Name);
 
-                ConectarMQ = true;
+                return true;
             }
             catch (MQException mq_ex)
             {
-                ConectarMQ = false;
                 funcion.Escribe(mq_ex);
+                return false;
+               
             }
             catch (Exception ex)
             {
-                ConectarMQ = false;
                 funcion.Escribe(ex, "Error");
+                return false;
+               
             }
-
-
-            return ConectarMQ;
         }
 
         /// <summary>
         /// Enviar mensaje a la cola MQ
         /// </summary>
         /// <returns></returns>
-        public bool EnviarMensajeMQ(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola)
+        public bool EnviarMensajeMQ(string strMQCola)
         {
             long lngMqOpen;
             bool EnviarMensajeMQ = false;
@@ -159,7 +164,7 @@ namespace MonitorMQTKT.Funciones
 
                 lngMqOpen = (long)MQOPEN.MQOO_OUTPUT;
 
-                if (AbrirColaMQ(objMQManager, strMQCola, objMQCola, (MQOPEN)lngMqOpen))
+                if (AbrirColaMQ(strMQCola, (MQOPEN)lngMqOpen))
                 {
                     pmo = new MQPutMessageOptions();
                     pmo.Options = MQC.MQPMO_SYNCPOINT;
@@ -189,12 +194,12 @@ namespace MonitorMQTKT.Funciones
         /// Abrir cola del MQ
         /// </summary>
         /// <returns></returns>
-        public bool AbrirColaMQ(MQQueueManager objMQManager, string strMQCola, MQQueue objMQCola, MQOPEN lngOpciones)
+        public bool AbrirColaMQ(string strMQCola, MQOPEN lngOpciones)
         {
             bool AbriColaMQ;
             try
             {
-                funcion.Escribe("Abriendo Cola", "Mensaje");
+                funcion.Escribe("Abriendo Cola: " + strMQCola, "Mensaje");
                 //QMGR = new MQQueueManager("usemq");
                 //QUEUE = QMGR.AccessQueue("SYSTEM.DEFAULT.LOCAL.QUEUE",
                 //    MQC.MQOO_INPUT_SHARED +

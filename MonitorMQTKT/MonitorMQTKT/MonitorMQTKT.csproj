@@ -52,6 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\ConexionBD.cs" />
+    <Compile Include="Data\FuncionesBd.cs" />
+    <Compile Include="Data\MensajeBd.cs" />
+    <Compile Include="Data\TktBd.cs" />
+    <Compile Include="Models\Autorizacion.cs" />
+    <Compile Include="Mq\TktMq.cs" />
+    <Compile Include="Processes\Tkt.cs" />
     <Compile Include="Views\Form1.cs">
       <SubType>Form</SubType>
     </Compile>

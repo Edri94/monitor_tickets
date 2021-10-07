@@ -99,9 +99,10 @@ namespace MonitorMQTKT
         private void FrmMonitor_Load(object sender, EventArgs e)
         {
             //strArchivoIni = App.Path & "\MonitorMQTKT.ini"
-
+            funcion.Escribe("Carga de formulario FrmMonitor_Load");
             if (monitorTicket.Inicia())
             {
+                funcion.Escribe("Entro al IF FrmMonitor_Load");
                 bCambioManual = false;
 
 
@@ -170,18 +171,18 @@ namespace MonitorMQTKT
 
         private void Iniciar()
         {
-            int i_row;
-
             try
             {
-                if(monitorTicket.ConectarMQ(monitorTicket.strMQManager))
+                funcion.Escribe("Seguimiento: funcion Iniciar() ");
+                if(monitorTicket.ConectarMQ(monitorTicket.strMQManager))//cambiar
                 {
                     monitorTicket.blnConectado = true;
                 }
                 else
                 {
-                    funcion.Escribe("Falla en Monitor < Falla en el cierre de MQ-Series > : " + funcion.ObtenFechaFormato(1)); ;
-                    funcion.Escribe("" + monitorTicket.QUEUE.ReasonCode + " " + monitorTicket.QUEUE.ReasonName);
+                    funcion.Escribe("Falla en Monitor < Falla en el cierre de MQ-Series > : " + funcion.ObtenFechaFormato(1));
+                    return;
+                    //funcion.Escribe("" + monitorTicket.QUEUE.ReasonCode + " " + monitorTicket.QUEUE.ReasonName);
                 }
 
                 if(ModoMonitor ==  true)
@@ -210,7 +211,13 @@ namespace MonitorMQTKT
                 {
                     monitorTicket.FechaRestar = monitorTicket.date.AddDays(1).ToString();
                 }
-                funcion.SetParameterAppSettings("RestarMonitor", monitorTicket.FechaRestar);
+                funcion.Escribe("(2)Escribiendo en AppSettings: " + monitorTicket.FechaRestar);
+                if(!funcion.UpdateAppSettings("RestarMonitor", monitorTicket.FechaRestar))
+                {
+                    funcion.Escribe("No se encontro el archivo");
+                    this.Close();
+                }
+
             }
             catch (Exception ex)
             {
@@ -230,7 +237,7 @@ namespace MonitorMQTKT
             funcion.Escribe("Valor de intgMonitor : " + monitorTicket.intgMonitor);
             funcion.Escribe("Valor de strFormatoTiempoBitacoras : " + monitorTicket.strFormatoTiempoBitacoras);
             funcion.Escribe("valor de dblCiclosBitacoras : " + monitorTicket.dblCiclosBitacoras);
-            funcion.Escribe("Valor de intTiempoBitacoras : " + monitorTicket.intTiempoBitacoras);
+            funcion.Escribe("Valor de intTiempoBitacoras : " + monitorTicket.intTiempoBitacoras);  
             //****************************************************************************Borrar despues
 
             if (monitorTicket.intgMonitor == 1)
@@ -262,16 +269,16 @@ namespace MonitorMQTKT
             {
                 if(monitorTicket.dblCiclosTKTMQ >= (monitorTicket.intTiempoTKTMQ * 60))
                 {
-                    TmrTKTMQ();
-                    monitorTicket.dblCiclosTKTMQ = 0;
+                    //TmrTKTMQ();
+                    //monitorTicket.dblCiclosTKTMQ = 0;
                 }
             }
             else
             {
                 if(monitorTicket.dblCiclosTKTMQ >= monitorTicket.intTiempoTKTMQ)
                 {
-                    TmrTKTMQ();
-                    monitorTicket.dblCiclosTKTMQ = 0;
+                    //TmrTKTMQ();
+                    //monitorTicket.dblCiclosTKTMQ = 0;
                 }
             }
 
@@ -291,6 +298,7 @@ namespace MonitorMQTKT
                     monitorTicket.dblCiclosFuncionarios = 0;
                 }
             }
+
 
             if(monitorTicket.strFormatoTiempoAutorizaciones != "S")
             {
@@ -328,7 +336,7 @@ namespace MonitorMQTKT
 
                 monitorTicket.FechaRestar = monitorTicket.date.ToString();
 
-                funcion.SetParameterAppSettings("RestarMonitor", monitorTicket.FechaRestar);
+                funcion.UpdateAppSettings("RestarMonitor", monitorTicket.FechaRestar);
 
                 funcion.Escribe("Aplicación Monitor iniciado : " + monitorTicket.currentDate, "Mensaje");
                 funcion.Escribe("Monitor iniciado en modo de procesamiento: " + monitorTicket.currentDate, "Mensaje");
@@ -346,6 +354,8 @@ namespace MonitorMQTKT
 
         private void ActivarEnvioFuncAuto(string psMonitor)
         {
+
+            funcion.Escribe("Entre  a ActivarEnvioFuncAuto(" + psMonitor + ")");
             Mensaje mensaje; ;
 
             double Ld_CodigoExecNTHOST;
@@ -356,10 +366,10 @@ namespace MonitorMQTKT
             switch (psMonitor)
             {
                 case "A":
-                    LsProceso = "PROCESOS2";
+                    LsProceso = "PROCESO2";
                     break;
                 case "F":
-                    LsProceso = "PROCESOS1";
+                    LsProceso = "PROCESO1";
                     break;
                 default:
                     break;
@@ -368,7 +378,12 @@ namespace MonitorMQTKT
 
             if(ActivoProcFuncAuto)
             {
-                sMensaje = funcion.Mid(funcion.getValueAppConfig(LsProceso), 3, funcion.getValueAppConfig(LsProceso).IndexOf(',', 3) -3);
+                string a = funcion.getValueAppConfig(LsProceso);
+                string b = funcion.getValueAppConfig(LsProceso);
+
+                var prueba = funcion.InStr(3, b, ",");
+
+                sMensaje = funcion.Mid(a, 3, funcion.InStr(3, b, ",") - 3);
 
                 if(fValidaEjecucion(sMensaje))
                 {
@@ -397,7 +412,7 @@ namespace MonitorMQTKT
                 lngMQOpen = (long)MqMonitorTicket.MQOPEN.MQOO_INQUIRE;
 
 
-                if (monitorTicket.AbrirColaMQ(monitorTicket.QMGR, "", monitorTicket.QUEUE, MqMonitorTicket.MQOPEN.MQOO_INQUIRE))
+                if (monitorTicket.AbrirColaMQ("", MqMonitorTicket.MQOPEN.MQOO_INQUIRE)) //cambiar
                 {
                     j = 1;
                     lngErr = monitorTicket.QUEUE.ReasonCode;
@@ -484,7 +499,7 @@ namespace MonitorMQTKT
                         Mensaje mensajes_MQ = new Mensaje();
 
                         //MensajesMQ.ProcesarMensajes App.Path, strMQManager & "-" & strMQQMonitorEscritura & "-" & "1" & "-" & Parametro(1)
-                        mensajes_MQ.ProcesarMensajes("D:\\TEMPORAL\\", "QMDCEDTK-QRT.CEDTK.ENVIO.MQD8-F-INAUTPU");
+                        //mensajes_MQ.ProcesarMensajes("D:\\TEMPORAL\\", "QMDCEDTK-QRT.CEDTK.ENVIO.MQD8-F-INAUTPU");
                         mensajes_MQ.ProcesarMensajes("D:\\TEMPORAL\\", monitorTicket.strMQManager + "-" + monitorTicket.strMQQMonitorEscritura + "-1-" + Parametro[1]);
 
                     }

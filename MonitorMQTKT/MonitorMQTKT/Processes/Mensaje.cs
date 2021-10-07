@@ -17,11 +17,6 @@ namespace MonitorMQTKT.Funciones
         private string Ls_Archivo;
         private string lsCommandLine;
 
-        // Variables para el control del log
-        private string strlogFileName;
-        private string strlogFilePath;
-        private bool Mb_GrabaLog;
-
         // Variables para el registro de los valores del header IH
         private string strFuncionHost; // Valor que indica el programa que invocara el CICSBRIDGE
         private string strHeaderTagIni; // Bandera que indica el comienzo del Header
@@ -69,15 +64,21 @@ namespace MonitorMQTKT.Funciones
 
         public string Bandera;
 
+        public string strlogFileName;
+        public string strlogFilePath;
+        public bool Mb_GrabaLog;
+
         MensajesMq mQ;
         Encriptacion encriptacion;
         Funcion funcion;
+        MensajeBd bd;
 
         public Mensaje()
         {
 
             mQ = new MensajesMq();
             encriptacion = new Encriptacion();
+            funcion = new Funcion();
         }
 
         public void ProcesarMensajes(string strRutaIni, string strParametros = "")
@@ -118,7 +119,7 @@ namespace MonitorMQTKT.Funciones
             if (!ValidaInfoMQ(Ls_MsgVal))
             {
 
-                mQ.psInsertarSQL(
+                bd.psInsertarSQL(
                     new Bitacora_Errores_Mensajes_Pu
                     {
                         fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -151,18 +152,18 @@ namespace MonitorMQTKT.Funciones
         private void ObtenerInfoMQ()
         {
             string section = "mqSeries";
-            Gs_MQManager = funcion.getValueAppConfig(section, "MQManager");
-            Gs_MQQueueEscritura = funcion.getValueAppConfig(section, "MQEscritura");
-            gsEjecutable = funcion.getValueAppConfig(section, "FGEjecutable");
+            Gs_MQManager = funcion.getValueAppConfig( "MQManager", section);
+            Gs_MQQueueEscritura = funcion.getValueAppConfig( "MQEscritura", section);
+            gsEjecutable = funcion.getValueAppConfig( "FGEjecutable", section);
         }
 
         private void ConfiguraFileLog()
         {
-            string section = "funcion.EscribeArchivoLOG";
+            string section = "escribeArchivoLOG";
 
-            strlogFileName = funcion.getValueAppConfig(section, "logFileName");
-            strlogFilePath = funcion.getValueAppConfig(section, "logFilePath");
-            string estatus_str = funcion.getValueAppConfig(section, "Estatus");
+            strlogFileName = funcion.getValueAppConfig( "logFileName", section);
+            strlogFilePath = funcion.getValueAppConfig( "logFilePath", section);
+            string estatus_str = funcion.getValueAppConfig( "Estatus", section);
             Mb_GrabaLog = (Int32.Parse(estatus_str) == 1) ? true : false;
         }
 
@@ -172,12 +173,13 @@ namespace MonitorMQTKT.Funciones
             string section = "conexion";
             try
             {
-                mQ.gsCataDB = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBCata"));
-                mQ.gsDSNDB = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBDSN"));
-                mQ.gsSrvr = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBSrvr"));
-                mQ.gsUserDB = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBUser"));
-                mQ.gsPswdDB = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBPswd"));
-                mQ.gsNameDB = encriptacion.Decrypt(funcion.getValueAppConfig(section, "DBName"));
+                string a = funcion.getValueAppConfig("DBCata", section);
+                mQ.gsCataDB = encriptacion.Decrypt(a);
+                mQ.gsDSNDB = encriptacion.Decrypt(funcion.getValueAppConfig( "DBDSN", section));
+                mQ.gsSrvr = encriptacion.Decrypt(funcion.getValueAppConfig( "DBSrvr", section));
+                mQ.gsUserDB = encriptacion.Decrypt(funcion.getValueAppConfig( "DBUser", section));
+                mQ.gsPswdDB = encriptacion.Decrypt(funcion.getValueAppConfig( "DBPswd", section));
+                mQ.gsNameDB = encriptacion.Decrypt(funcion.getValueAppConfig( "DBName", section));
 
                 string conn_str = $"Data source ={mQ.gsSrvr}; uid ={mQ.gsUserDB}; PWD ={mQ.gsPswdDB}; initial catalog = {mQ.gsNameDB}";
                 mQ.cnnConexion = new ConexionBD(conn_str);
@@ -209,49 +211,49 @@ namespace MonitorMQTKT.Funciones
         {
             string section = "headerih";
 
-            strFuncionHost = funcion.getValueAppConfig(section, "PRIMERVALOR");
-            strHeaderTagIni = $"<{funcion.getValueAppConfig(section, "IHTAGINI")}>";
-            strIDProtocol = funcion.getValueAppConfig(section, "IDPROTOCOL");
-            strLogical = funcion.getValueAppConfig(section, "Logical");
-            strAccount = funcion.getValueAppConfig(section, "ACCOUNT");
-            strUser = funcion.getValueAppConfig(section, "User");
-            strSeqNumber = funcion.getValueAppConfig(section, "SEQNUMBER");
-            strTXCode = funcion.getValueAppConfig(section, "TXCODE"); //vacio
-            strUserOption = funcion.getValueAppConfig(section, "USEROPT");
-            strCommit = funcion.getValueAppConfig(section, "Commit");
-            strMsgType = funcion.getValueAppConfig(section, "MSGTYPE");
-            strProcessType = funcion.getValueAppConfig(section, "PROCESSTYPE");
-            strChannel = funcion.getValueAppConfig(section, "CHANNEL");
-            strPreFormat = funcion.getValueAppConfig(section, "PREFORMATIND");
-            strLenguage = funcion.getValueAppConfig(section, "LANGUAGE");
-            strHeaderTagEnd = $"</{funcion.getValueAppConfig(section, "IHTAGEND")}>";
+            strFuncionHost = funcion.getValueAppConfig( "PRIMERVALOR", section);
+            strHeaderTagIni = $"<{funcion.getValueAppConfig( "IHTAGINI", section)}>";
+            strIDProtocol = funcion.getValueAppConfig( "IDPROTOCOL", section);
+            strLogical = funcion.getValueAppConfig( "Logical", section);
+            strAccount = funcion.getValueAppConfig( "ACCOUNT", section);
+            strUser = funcion.getValueAppConfig( "User", section);
+            strSeqNumber = funcion.getValueAppConfig( "SEQNUMBER", section);
+            strTXCode = funcion.getValueAppConfig( "TXCODE", section); //vacio
+            strUserOption = funcion.getValueAppConfig( "USEROPT", section);
+            strCommit = funcion.getValueAppConfig( "Commit", section);
+            strMsgType = funcion.getValueAppConfig( "MSGTYPE", section);
+            strProcessType = funcion.getValueAppConfig( "PROCESSTYPE", section);
+            strChannel = funcion.getValueAppConfig( "CHANNEL", section);
+            strPreFormat = funcion.getValueAppConfig( "PREFORMATIND", section);
+            strLenguage = funcion.getValueAppConfig( "LANGUAGE", section);
+            strHeaderTagEnd = $"</{funcion.getValueAppConfig( "IHTAGEND", section)}>";
 
             section = "headerme";
 
-            strMETAGINI = $"<{funcion.getValueAppConfig(section, "METAGINI")}>";
-            strMsgTypeCole = funcion.getValueAppConfig(section, "TIPOMSG");
-            strMETAGEND = $"</{funcion.getValueAppConfig(section, "METAGEND")}>";
+            strMETAGINI = $"<{funcion.getValueAppConfig( "METAGINI", section)}>";
+            strMsgTypeCole = funcion.getValueAppConfig( "TIPOMSG", section);
+            strMETAGEND = $"</{funcion.getValueAppConfig( "METAGEND", section)}>";
 
             section = "defaultValues";
 
-            strFechaBaja = funcion.getValueAppConfig(section, "FECHABAJA");
-            strColectorMaxLeng = funcion.getValueAppConfig(section, "COLMAXLENG");
-            strMsgMaxLeng = funcion.getValueAppConfig(section, "MSGMAXLENG");
-            strPS9MaxLeng = funcion.getValueAppConfig(section, "PS9MAXLENG");
-            strReplyToMQ = funcion.getValueAppConfig(section, "ReplyToQueue");
+            strFechaBaja = funcion.getValueAppConfig( "FECHABAJA", section);
+            strColectorMaxLeng = funcion.getValueAppConfig( "COLMAXLENG", section);
+            strMsgMaxLeng = funcion.getValueAppConfig( "MSGMAXLENG", section);
+            strPS9MaxLeng = funcion.getValueAppConfig( "PS9MAXLENG", section);
+            strReplyToMQ = funcion.getValueAppConfig( "ReplyToQueue", section);
 
             switch (gsEjecutable)
             {
                 case "F":
-                    strFuncionSQL = funcion.getValueAppConfig(section, "FuncionSQLF");
+                    strFuncionSQL = funcion.getValueAppConfig( "FuncionSQLF", section);
                     break;
                 case "A":
-                    strFuncionSQL = funcion.getValueAppConfig(section, "FuncionSQLA");
+                    strFuncionSQL = funcion.getValueAppConfig( "FuncionSQLA", section);
                     break;
             }
-            strRndLogTerm = funcion.getValueAppConfig(section, "RandomLogTerm");
-            sPersistencia = funcion.getValueAppConfig(section, "PPERSISTENCE");
-            sExpirar = funcion.getValueAppConfig(section, "PEXPIRY");
+            strRndLogTerm = funcion.getValueAppConfig( "RandomLogTerm", section);
+            sPersistencia = funcion.getValueAppConfig( "PPERSISTENCE", section);
+            sExpirar = funcion.getValueAppConfig( "PEXPIRY", section);
         }
 
         private bool ValidaInfoMQ(string ps_MsgVal)
@@ -326,7 +328,7 @@ namespace MonitorMQTKT.Funciones
                 //strQuery = strQuery + "WHERE status_envio = 0";
                 strQuery = strQuery + "WHERE status_envio = 1 and CONVERT(DATETIME, fecha_ultimo_mant, 105) > '05-12-2016 00:00:00'"; //cambiar
 
-                DataTable rssRegistro = mQ.ConsultaMQQUEUEFunc(strQuery);
+                DataTable rssRegistro = bd.ConsultaMQQUEUEFunc(strQuery);
 
                 if (rssRegistro.Rows.Count > 0)
                 {
@@ -337,7 +339,7 @@ namespace MonitorMQTKT.Funciones
                     else
                     {
 
-                        mQ.psInsertarSQL(
+                        bd.psInsertarSQL(
                             new Bitacora_Errores_Mensajes_Pu
                             {
                                 fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -387,7 +389,7 @@ namespace MonitorMQTKT.Funciones
                             if (Ls_MensajeMQ != "")
                             {
                                 funcion.Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
-                                if (mQ.EnviarMensajeMQ(mQ.QMGR, Gs_MQQueueEscritura, mQ.QUEUE))
+                                if (mQ.EnviarMensajeMQ(Gs_MQQueueEscritura))
                                 {
                                     //ReDim Preserve las_Funcionarios(NumeroMsgEnviados)
                                     las_Funcionarios.Add(new MensajeEnviar { NumMensaje = NumeroMsgEnviados, Msj = ls_IDFuncionario });
@@ -395,7 +397,7 @@ namespace MonitorMQTKT.Funciones
                                 }
                                 else
                                 {
-                                    mQ.psInsertarSQL(
+                                    bd.psInsertarSQL(
                                        new Bitacora_Errores_Mensajes_Pu
                                        {
                                            fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -408,7 +410,7 @@ namespace MonitorMQTKT.Funciones
                             }
                             else
                             {
-                                mQ.psInsertarSQL(
+                                bd.psInsertarSQL(
                                        new Bitacora_Errores_Mensajes_Pu
                                        {
                                            fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -502,7 +504,7 @@ namespace MonitorMQTKT.Funciones
                 //strQuery = strQuery + "WHERE status_envio = 0";
                 strQuery = strQuery + "WHERE status_envio = 1 AND CONVERT(DATETIME, fecha_operacion, 12) > '2020-01-01 00:00:00'"; //cambiar
 
-                DataTable rssRegistro = mQ.ConsultaMQQUEUEAuto(strQuery);
+                DataTable rssRegistro = bd.ConsultaMQQUEUEAuto(strQuery);
 
                 if (rssRegistro.Rows.Count > 0)
                 {
@@ -512,7 +514,7 @@ namespace MonitorMQTKT.Funciones
                     }
                     else
                     {
-                        mQ.psInsertarSQL(
+                        bd.psInsertarSQL(
                             new Bitacora_Errores_Mensajes_Pu
                             {
                                 fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -559,7 +561,7 @@ namespace MonitorMQTKT.Funciones
                             if (Ls_MensajeMQ != "")
                             {
                                 funcion.Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
-                                if (mQ.EnviarMensajeMQ(mQ.QMGR, Gs_MQQueueEscritura, mQ.QUEUE))
+                                if (mQ.EnviarMensajeMQ(Gs_MQQueueEscritura))
                                 {
                                     funcion.Escribe("Paso 1", "mensaje");
                                     funcion.Escribe($"las_Autorizaciones[{NumeroMsgEnviados}] = {ls_Operacion}", "mensaje");
@@ -570,7 +572,7 @@ namespace MonitorMQTKT.Funciones
                                 }
                                 else
                                 {
-                                    mQ.psInsertarSQL(
+                                    bd.psInsertarSQL(
                                         new Bitacora_Errores_Mensajes_Pu
                                         {
                                             fecha_hora = DateTime.Parse(mQ.gsAccesoActual),
@@ -583,7 +585,7 @@ namespace MonitorMQTKT.Funciones
                             }
                             else
                             {
-                                mQ.psInsertarSQL(
+                                bd.psInsertarSQL(
                                     new Bitacora_Errores_Mensajes_Pu
                                     {
                                         fecha_hora = DateTime.Parse(mQ.gsAccesoActual),

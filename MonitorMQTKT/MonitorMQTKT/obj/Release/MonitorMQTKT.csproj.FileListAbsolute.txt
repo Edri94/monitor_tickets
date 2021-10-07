@@ -1,0 +1,12 @@
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Release\MonitorMQTKT.exe.config
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Release\MonitorMQTKT.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Release\MonitorMQTKT.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\bin\Release\amqmdnet.dll
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.FrmMonitor.resources
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.Properties.Resources.resources
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.csproj.GenerateResource.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.csproj.CoreCompileInputs.cache
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.csproj.CopyComplete
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.exe
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.pdb
+C:\Users\MI05332\Documents\practicas\c sharp\Monitor_Tickets\MonitorMQTKT\MonitorMQTKT\obj\Release\MonitorMQTKT.csproj.AssemblyReference.cache

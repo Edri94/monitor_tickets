@@ -17,6 +17,7 @@ namespace MonitorMQTKT.Funciones
         public void Escribe(string vData, string tipo = "Mensaje")
         {
             string seccion = "escribeArchivoLOG";
+            string nombre_archivo = DateTime.Now.ToString("ddMMyyyy") + "-" + getValueAppConfig("logFileName", seccion);
             //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
             //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //string docPath = @"C:\tmp\log\";
@@ -24,7 +25,7 @@ namespace MonitorMQTKT.Funciones
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig( "logFilePath", seccion), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}]  {tipo}:  {vData}";
                     Console.WriteLine(vData);
@@ -42,6 +43,7 @@ namespace MonitorMQTKT.Funciones
         {
             string vData;
             string seccion = "escribeArchivoLOG";
+            string nombre_archivo = DateTime.Now.ToString("ddMMyyyy") + "-" + getValueAppConfig("logFileName", seccion);
             //Archivo = strlogFilePath & Format(Now(), "yyyyMMdd") & "-" & strlogFileName
             //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             //string docPath = @"C:\tmp\log\";
@@ -49,7 +51,7 @@ namespace MonitorMQTKT.Funciones
 
             if (true)
             {
-                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig(seccion, "logFilePath"), getValueAppConfig(seccion, "logFileName")), append: true))
+                using (StreamWriter outputFile = new StreamWriter(Path.Combine(getValueAppConfig("logFilePath", seccion), nombre_archivo), append: true))
                 {
                     vData = $"[{DateTime.Now.ToString("dd-MM-yyyy hh:mm:ss")}] {(char)13}" +
                         $"*{tipo}:  {ex.Message} {(char)13}" +
@@ -57,6 +59,8 @@ namespace MonitorMQTKT.Funciones
                         $"*Source: {ex.Source}  {(char)13}" +
                         $"*Data: {ex.Data}  {(char)13}" +
                         $"*HelpLink: {ex.HelpLink}  {(char)13}" +
+                        $"*StackTrace: {ex.StackTrace}  {(char)13}" +
+                        $"*HResult: {ex.HResult}  {(char)13}" +
                         $"*TargetSite: {ex.TargetSite}  {(char)13}";
                     Console.Write(vData);
                     outputFile.WriteLine(vData);
@@ -71,9 +75,9 @@ namespace MonitorMQTKT.Funciones
         /// <param name="section">Seccion donde buscara</param>
         /// <param name="value">Valor que buscas</param>
         /// <returns></returns>
-        public string getValueAppConfig(string section, string key = "")
+        public string getValueAppConfig(string key, string section = "")
         {
-            if(key.Length >= 1)
+            if(section.Length >= 1)
             {
                 return ConfigurationManager.AppSettings[$"{section}.{key}"];
             }
@@ -115,39 +119,56 @@ namespace MonitorMQTKT.Funciones
         /// <param name="section">seccion en appsettings</param>
         /// <param name="key">key en appsetitngs</param>
         /// <param name="value">valor nuevo</param>
-        public void SetParameterAppSettings(string key, string value, string section = "")
+        public bool SetParameterAppSettings(string key, string value, string section = "")
         {
+            //string nombre_appconfig = "MonitorMQTKT.exe.config";
+            string nombre_appconfig = "App.config";
+
+            bool bandera_archivo_existe = false;
             try
             {
                 string appPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                Escribe("Split aplicado a:   " + appPath);
                 string[] appPath_arr = appPath.Split('\\');
 
-                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
                 appPath = "";
-                for (int i = 0; i < (appPath_arr.Length - 1); i++)
+                for (int i = 0; i < (appPath_arr.Length); i++)
                 {
-                    appPath = appPath + "\\" + appPath_arr[i];
+                    appPath = (i > 0) ? appPath + "\\" + appPath_arr[i] : appPath + appPath_arr[i];
+                    string busqueda = $"{appPath}\\{nombre_appconfig}";
+                    Escribe("Buscando:    " + busqueda);
+                    bandera_archivo_existe = File.Exists(busqueda);
+                    if (bandera_archivo_existe) break;
                 }
-                appPath = appPath.Substring(1, appPath.Length - 1);
-                Escribe("Variable entrada [appPath]: " + appPath, "Mensaje");
-                string configFile = System.IO.Path.Combine(appPath, "App.config");
-                Escribe("Variable entrada [configFile]: " + configFile, "Mensaje");
-                ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
-                configFileMap.ExeConfigFilename = configFile;
-                System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
-                if (section.Length > 0)
+                if(bandera_archivo_existe)
                 {
-                    config.AppSettings.Settings[$"{section}.{key}"].Value = value;
+                    appPath = appPath.Substring(1, appPath.Length - 1);
+                    string configFile = System.IO.Path.Combine(appPath, nombre_appconfig);
+                    ExeConfigurationFileMap configFileMap = new ExeConfigurationFileMap();
+                    configFileMap.ExeConfigFilename = configFile;
+                    System.Configuration.Configuration config = ConfigurationManager.OpenMappedExeConfiguration(configFileMap, ConfigurationUserLevel.None);
+                    if (section.Length > 0)
+                    {
+                        config.AppSettings.Settings[$"{section}.{key}"].Value = value;
+                    }
+                    else
+                    {
+                        config.AppSettings.Settings[key].Value = value;
+                    }
+                    config.Save();
+                    return true;
                 }
                 else
                 {
-                    config.AppSettings.Settings[$"{key}"].Value = value;
+                    Escribe("No se encontro el archivo", "Error");
+                    return false;
                 }
-                config.Save();
+                
             }
             catch (Exception ex)
             {
                 Escribe(ex, "Error");
+                return false;
             }
 
         }
@@ -175,7 +196,7 @@ namespace MonitorMQTKT.Funciones
         }
 
         /// <summary>
-        /// Devuelve una cadena que contiene un número de caracteres especificado a partir de una posición especificada de una cadena.
+        /// Devuelve una variante ( cadena ) que contiene un número específico de caracteres de una cadena.
         /// </summary>
         /// <param name="cadena"></param>
         /// <param name="start"></param>
@@ -183,6 +204,7 @@ namespace MonitorMQTKT.Funciones
         /// <returns></returns>
         public string Mid(string cadena, int start, int length)
         {
+            start--;
             return cadena.Substring(start, length);
         }
         /// <summary>
@@ -192,8 +214,73 @@ namespace MonitorMQTKT.Funciones
         /// <param name="posiciones">Posiciones a tomar</param>
         /// <returns></returns>
         public string Right(string cadena, int posiciones)
-        {
+        {           
             return cadena.Substring((cadena.Length - posiciones), posiciones);
+        }
+
+
+        /// <summary>
+        /// Se Actualiza el dato de configuracion con el app.config, solo para Alertas
+        /// </summary>
+        /// <param name="Key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool UpdateAppSettings(string Key, string value)
+        {
+            try
+            {
+                //string s = ConfigurationManager.AppSettings[Key];
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                var settings = configFile.AppSettings.Settings;
+
+                if (settings[Key] == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    settings[Key].Value = value;
+                }
+                configFile.Save(ConfigurationSaveMode.Modified);
+                ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+                return true;
+            }
+            catch (ConfigurationErrorsException)
+            {
+                Console.WriteLine("Error writing app settings");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Devuelve una variante ( larga ) que especifica la posición de la primera aparición de una cadena dentro de otra.
+        /// </summary>
+        /// <param name="inicio"></param>
+        /// <param name="cadena1"></param>
+        /// <param name="cadena2"></param>
+        /// <returns></returns>
+        public int InStr(int inicio, string cadena1, string cadena2)
+        {
+            try
+            {
+                int contador;          
+                string caracter;
+
+                for (contador = 0; contador < cadena1.Length; contador++)
+                {
+                    caracter = cadena1.Substring(contador, 1);
+                    if(caracter == cadena2 & contador >= inicio)
+                    {
+                        break;
+                    }
+                }
+
+                return contador + 1;
+            }
+            catch (Exception)
+            {
+                return -1;
+            }
         }
     }
 }

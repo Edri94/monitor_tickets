@@ -107,8 +107,8 @@ namespace MonitorMQTKT.Processes
 
         private void ConfiguraFileLog(string section)
         {
-            string strlogFileName =  funcion.getValueAppConfig(section, "logFileName");
-            string strlogFilePath =  funcion.getValueAppConfig(section, "logFilePath");
+            string strlogFileName =  funcion.getValueAppConfig("logFileName", section);
+            string strlogFilePath =  funcion.getValueAppConfig( "logFilePath", section);
 
             bool Mb_GrabaLog = true;
         }
@@ -116,44 +116,44 @@ namespace MonitorMQTKT.Processes
         private void ObtenerInfoMq()
         {
             string section = "mqSeries";
-            Gs_MQManager =  funcion.getValueAppConfig(section, "MQManager");
-            Gs_MQQueueEscritura =  funcion.getValueAppConfig(section, "MQEscritura");
-            strFuncionSQL =  funcion.getValueAppConfig(section, "FGBitacora");
+            Gs_MQManager =  funcion.getValueAppConfig( "MQManager", section);
+            Gs_MQQueueEscritura =  funcion.getValueAppConfig("MQEscritura", section);
+            strFuncionSQL =  funcion.getValueAppConfig( "FGBitacora", section);
         }
 
         private void ConfiguraHeader_IH_ME()
         {
             string section = "headerih";
-            strFuncionHost =  funcion.getValueAppConfig(section, "PRIMERVALOR");
-            strHeaderTagIni = $"<{ funcion.getValueAppConfig(section, "IHTAGINI")}>";
-            strIDProtocol =  funcion.getValueAppConfig(section, "IDPROTOCOL");
-            strLogical =  funcion.getValueAppConfig(section, "FGBitacora");
-            strAccount =  funcion.getValueAppConfig(section, "ACCOUNT");
-            strUser =  funcion.getValueAppConfig(section, "User");
-            strSeqNumber =  funcion.getValueAppConfig(section, "SEQNUMBER");
-            strTXCode =  funcion.getValueAppConfig(section, "TXCODE");
-            strUserOption =  funcion.getValueAppConfig(section, "USEROPT");
-            strCommit =  funcion.getValueAppConfig(section, "Commit");
-            strMsgType =  funcion.getValueAppConfig(section, "MSGTYPE");
-            strProcessType =  funcion.getValueAppConfig(section, "PROCESSTYPE");
-            strChannel =  funcion.getValueAppConfig(section, "CHANNEL");
-            strPreFormat =  funcion.getValueAppConfig(section, "PREFORMATIND");
-            strLenguage =  funcion.getValueAppConfig(section, "LANGUAGE");
-            strHeaderTagEnd = $"</{ funcion.getValueAppConfig(section, "IHTAGEND")}>";
+            strFuncionHost =  funcion.getValueAppConfig( "PRIMERVALOR", section);
+            strHeaderTagIni = $"<{ funcion.getValueAppConfig( "IHTAGINI", section)}>";
+            strIDProtocol =  funcion.getValueAppConfig( "IDPROTOCOL", section);
+            strLogical =  funcion.getValueAppConfig( "FGBitacora", section);
+            strAccount =  funcion.getValueAppConfig( "ACCOUNT", section);
+            strUser =  funcion.getValueAppConfig( "User", section);
+            strSeqNumber =  funcion.getValueAppConfig( "SEQNUMBER", section);
+            strTXCode =  funcion.getValueAppConfig( "TXCODE", section);
+            strUserOption =  funcion.getValueAppConfig( "USEROPT", section);
+            strCommit =  funcion.getValueAppConfig( "Commit", section);
+            strMsgType =  funcion.getValueAppConfig( "MSGTYPE", section);
+            strProcessType =  funcion.getValueAppConfig( "PROCESSTYPE", section);
+            strChannel =  funcion.getValueAppConfig( "CHANNEL", section);
+            strPreFormat =  funcion.getValueAppConfig( "PREFORMATIND", section);
+            strLenguage =  funcion.getValueAppConfig( "LANGUAGE", section);
+            strHeaderTagEnd = $"</{ funcion.getValueAppConfig( "IHTAGEND", section)}>";
 
             section = "headerme";
 
-            strMETAGINI = $"<{ funcion.getValueAppConfig(section, "METAGINI")}>";
-            strMsgTypeCole =  funcion.getValueAppConfig(section, "TIPOMSG");
-            strMETAGEND = $"</{ funcion.getValueAppConfig(section, "METAGEND")}>";
+            strMETAGINI = $"<{ funcion.getValueAppConfig( "METAGINI", section)}>";
+            strMsgTypeCole =  funcion.getValueAppConfig( "TIPOMSG", section);
+            strMETAGEND = $"</{ funcion.getValueAppConfig( "METAGEND", section)}>";
 
             section = "defaultValues";
 
-            strColectorMaxLeng =  funcion.getValueAppConfig(section, "COLMAXLENG");
-            strMsgMaxLeng =  funcion.getValueAppConfig(section, "MSGMAXLENG");
-            strPS9MaxLeng =  funcion.getValueAppConfig(section, "PS9MAXLENG");
-            strReplyToMQ =  funcion.getValueAppConfig(section, "ReplyToQueue");
-            strRndLogTerm =  funcion.getValueAppConfig(section, "RandomLogTerm");
+            strColectorMaxLeng =  funcion.getValueAppConfig( "COLMAXLENG", section);
+            strMsgMaxLeng =  funcion.getValueAppConfig( "MSGMAXLENG", section);
+            strPS9MaxLeng =  funcion.getValueAppConfig( "PS9MAXLENG", section);
+            strReplyToMQ =  funcion.getValueAppConfig( "ReplyToQueue", section);
+            strRndLogTerm =  funcion.getValueAppConfig( "RandomLogTerm", section);
         }
 
         private bool ValidaInfoMQ(string ps_MsgVal)
@@ -217,7 +217,7 @@ namespace MonitorMQTKT.Processes
                     {
                          funcion.Escribe("Mensaje Enviado: " + Ls_MensajeMQ, "Mensaje");
 
-                        if (mqSeries.EnviarMensajeMQ(mqSeries.QMGR, Gs_MQQueueEscritura, mqSeries.QUEUE))
+                        if (mqSeries.EnviarMensajeMQ(Gs_MQQueueEscritura))
                         {
                             sMensajeEnvio = (sEnvioConse + 1).ToString();
 
@@ -266,6 +266,9 @@ namespace MonitorMQTKT.Processes
             try
             {
                 ls_TempColectorMsg = strMsgColector;
+                funcion.Escribe("Entre a  funcion: ASTA_ENTRADA");
+                funcion.Escribe("ls_TempColectorMsg: " + ls_TempColectorMsg);
+                funcion.Escribe("strColectorMaxLeng: " + strColectorMaxLeng);
 
                 if (ls_TempColectorMsg.Length > Int32.Parse(strColectorMaxLeng))
                 {

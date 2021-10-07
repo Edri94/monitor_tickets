@@ -61,6 +61,7 @@ namespace MonitorMQTKT
             // 
             // tmrMonitorMQTKT
             // 
+            this.tmrMonitorMQTKT.Enabled = true;
             this.tmrMonitorMQTKT.Tick += new System.EventHandler(this.tmrMonitorMQTKT_Tick);
             // 
             // FrmMonitor
